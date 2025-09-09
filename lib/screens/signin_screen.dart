@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'otp_screen.dart';
 import 'recover_password_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dashboard_screen.dart';
 
@@ -276,9 +275,9 @@ class _SignInScreenState extends State<SignInScreen> {
 
       if (savedPassword == password) {
         if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          (route) => false,
         );
       } else {
         // Phone is authorized but password incorrect → show invalid password message
@@ -292,8 +291,8 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _handleOTPLogin() {
-    print('Login with OTP button clicked');
-    print('Navigating directly to OTP screen');
+    debugPrint('Login with OTP button clicked');
+    debugPrint('Navigating directly to OTP screen');
     
     Navigator.push(
       context,
@@ -302,8 +301,6 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
-
-  void _showRecoverPasswordDialog() {}
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(

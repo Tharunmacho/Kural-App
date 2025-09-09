@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dashboard_screen.dart';
 
 class VoterSlipScreen extends StatefulWidget {
   const VoterSlipScreen({super.key});
@@ -26,154 +27,169 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: Column(
-        children: [
-          // Header with light blue background
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 40, bottom: 20, left: 20, right: 20),
-            decoration: BoxDecoration(
-              color: Color(0xFFE3F2FD), // Light blue background
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              children: [
-                // Back button
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 24,
-                    color: Colors.black87,
-                  ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const DashboardScreen()),
+          (route) => false,
+        );
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: Column(
+          children: [
+            // Header with light blue background
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(top: 40, bottom: 20, left: 20, right: 20),
+              decoration: BoxDecoration(
+                color: Color(0xFFE3F2FD), // Light blue background
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
-                const SizedBox(width: 16),
-                // Title
-                Expanded(
-                  child: Text(
-                    'Voter Slip',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+              ),
+              child: Row(
+                children: [
+                  // Back button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                        (route) => false,
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 24,
                       color: Colors.black87,
                     ),
                   ),
-                ),
-                const SizedBox(width: 40), // Balance the back button
-              ],
+                  const SizedBox(width: 16),
+                  // Title
+                  Expanded(
+                    child: Text(
+                      'Voter Slip',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 40), // Balance the back button
+                ],
+              ),
             ),
-          ),
-          
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+            
+            // Search bar
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Voter Slip Name',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 16,
+                    ),
+                    suffixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey[400],
+                      size: 20,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  ),
+                ),
+              ),
+            ),
+            
+            // Content sections
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  // Default section
+                  _buildVoterSlipSection(
+                    title: 'Default',
+                    printEnabled: _defaultPrintEnabled,
+                    candidateEnabled: _defaultCandidateEnabled,
+                    onPrintChanged: (value) {
+                      setState(() {
+                        _defaultPrintEnabled = value;
+                      });
+                    },
+                    onCandidateChanged: (value) {
+                      setState(() {
+                        _defaultCandidateEnabled = value;
+                      });
+                    },
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Thondamuthur4 section
+                  _buildVoterSlipSection(
+                    title: 'Thondamuthur4',
+                    printEnabled: _thondamuthurPrintEnabled,
+                    candidateEnabled: _thondamuthurCandidateEnabled,
+                    onPrintChanged: (value) {
+                      setState(() {
+                        _thondamuthurPrintEnabled = value;
+                      });
+                    },
+                    onCandidateChanged: (value) {
+                      setState(() {
+                        _thondamuthurCandidateEnabled = value;
+                      });
+                    },
+                    showPreview: true,
                   ),
                 ],
               ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Enter Voter Slip Name',
-                  hintStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 16,
-                  ),
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: Colors.grey[400],
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                ),
-              ),
-            ),
-          ),
-          
-          // Content sections
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                // Default section
-                _buildVoterSlipSection(
-                  title: 'Default',
-                  printEnabled: _defaultPrintEnabled,
-                  candidateEnabled: _defaultCandidateEnabled,
-                  onPrintChanged: (value) {
-                    setState(() {
-                      _defaultPrintEnabled = value;
-                    });
-                  },
-                  onCandidateChanged: (value) {
-                    setState(() {
-                      _defaultCandidateEnabled = value;
-                    });
-                  },
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Thondamuthur4 section
-                _buildVoterSlipSection(
-                  title: 'Thondamuthur4',
-                  printEnabled: _thondamuthurPrintEnabled,
-                  candidateEnabled: _thondamuthurCandidateEnabled,
-                  onPrintChanged: (value) {
-                    setState(() {
-                      _thondamuthurPrintEnabled = value;
-                    });
-                  },
-                  onCandidateChanged: (value) {
-                    setState(() {
-                      _thondamuthurCandidateEnabled = value;
-                    });
-                  },
-                  showPreview: true,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      
-      // Bottom navigation bar
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: Offset(0, -2),
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildNavItem('Repor', Icons.trending_up, false),
-            _buildNavItem('Catalogue', Icons.view_module, false),
-            _buildNavItem('', Icons.home, true),
-            _buildNavItem('Slip', Icons.receipt_long, false),
-            _buildNavItem('Poll', Icons.how_to_vote, false),
-          ],
+        
+        // Bottom navigation bar
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNavItem('Repor', Icons.trending_up, false),
+              _buildNavItem('Catalogue', Icons.view_module, false),
+              _buildNavItem('', Icons.home, true),
+              _buildNavItem('Slip', Icons.receipt_long, false),
+              _buildNavItem('Poll', Icons.how_to_vote, false),
+            ],
+          ),
         ),
       ),
     );
@@ -243,7 +259,7 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
                           child: Switch(
                             value: printEnabled,
                             onChanged: onPrintChanged,
-                            activeColor: Colors.white,
+                            activeThumbColor: Colors.white,
                             activeTrackColor: Colors.green,
                             inactiveThumbColor: Colors.white,
                             inactiveTrackColor: Colors.red,
@@ -281,7 +297,7 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
                           child: Switch(
                             value: candidateEnabled,
                             onChanged: onCandidateChanged,
-                            activeColor: Colors.white,
+                            activeThumbColor: Colors.white,
                             activeTrackColor: Colors.green,
                             inactiveThumbColor: Colors.white,
                             inactiveTrackColor: Colors.red,

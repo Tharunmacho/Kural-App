@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'voter_slip_screen.dart';
 import '../widgets/bottom_navigation_bar.dart';
+import 'dashboard_screen.dart';
 
 class SlipBoxScreen extends StatefulWidget {
   const SlipBoxScreen({super.key});
@@ -15,7 +16,16 @@ class _SlipBoxScreenState extends State<SlipBoxScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const DashboardScreen()),
+          (route) => false,
+        );
+      },
+      child: Scaffold(
       backgroundColor: Color(0xFFF5F7FA),
       body: SafeArea(
         child: Stack(
@@ -42,7 +52,12 @@ class _SlipBoxScreenState extends State<SlipBoxScreen> {
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                            (route) => false,
+                          );
+                        },
                         child: Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -254,6 +269,7 @@ class _SlipBoxScreenState extends State<SlipBoxScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

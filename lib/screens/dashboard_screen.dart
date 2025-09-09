@@ -916,7 +916,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: DropdownButtonFormField<String>(
-                    value: tempSelectedElection,
+                    initialValue: tempSelectedElection,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),

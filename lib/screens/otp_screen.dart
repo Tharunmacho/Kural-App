@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dashboard_screen.dart';
 
 class OTPScreen extends StatefulWidget {
   final String? initialPhone;
@@ -32,94 +33,99 @@ class _OTPScreenState extends State<OTPScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double keyboardInset = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFE3F2FD),
-              Color(0xFFBBDEFB),
-            ],
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: keyboardInset.clamp(0, 300)),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFE3F2FD),
+                Color(0xFFBBDEFB),
+              ],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header section with back button
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Colors.black87,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          'OTP Verification',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Header section with back button
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back,
                             color: Colors.black87,
+                            size: 24,
                           ),
                         ),
                       ),
-                    ),
-                    Container(width: 40), // Spacer to center title
-                  ],
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'OTP Verification',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(width: 40), // Spacer to center title
+                    ],
+                  ),
                 ),
-              ),
-              
-              // Top illustration section
-              Container(
-                height: 200,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1.0,
-                  children: [
-                    _buildIllustrationCard(Icons.campaign, Colors.orange),
-                    _buildIllustrationCard(Icons.how_to_vote, Colors.blue),
-                    _buildIllustrationCard(Icons.edit, Colors.green),
-                    _buildIllustrationCard(Icons.inventory_2, Colors.purple),
-                  ],
+                
+                // Top illustration section
+                Container(
+                  height: 200,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1.0,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildIllustrationCard(Icons.campaign, Colors.orange),
+                      _buildIllustrationCard(Icons.how_to_vote, Colors.blue),
+                      _buildIllustrationCard(Icons.edit, Colors.green),
+                      _buildIllustrationCard(Icons.inventory_2, Colors.purple),
+                    ],
+                  ),
                 ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // TEAM text
-              Text(
-                'TEAM',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                  letterSpacing: 8,
+                
+                const SizedBox(height: 40),
+                
+                // TEAM text
+                Text(
+                  'TEAM',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    letterSpacing: 8,
+                  ),
                 ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // OTP form section
-              Expanded(
-                child: Container(
+                
+                const SizedBox(height: 40),
+                
+                // OTP form section
+                Container(
                   padding: EdgeInsets.all(30),
                   margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -152,6 +158,7 @@ class _OTPScreenState extends State<OTPScreen> {
                       TextFormField(
                         controller: _mobileController,
                         keyboardType: TextInputType.phone,
+                        scrollPadding: EdgeInsets.only(bottom: 120 + keyboardInset),
                         decoration: InputDecoration(
                           labelText: 'Mobile Number',
                           hintText: 'Enter your mobile number',
@@ -224,6 +231,7 @@ class _OTPScreenState extends State<OTPScreen> {
                           controller: _codeController,
                           keyboardType: TextInputType.number,
                           maxLength: 6,
+                          scrollPadding: EdgeInsets.only(bottom: 120 + keyboardInset),
                           decoration: InputDecoration(
                             labelText: 'Enter 6-digit code',
                             counterText: '',
@@ -265,8 +273,8 @@ class _OTPScreenState extends State<OTPScreen> {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -350,8 +358,8 @@ class _OTPScreenState extends State<OTPScreen> {
     try {
       final phone = _formatPhoneNumber(_mobileController.text.trim());
       
-      // Debug logging (can be removed in production)
-      print('Sending OTP to: $phone');
+      // Debug logging
+      debugPrint('Sending OTP to: $phone');
       
       await auth.verifyPhoneNumber(
         phoneNumber: phone,
@@ -363,9 +371,14 @@ class _OTPScreenState extends State<OTPScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Phone verified automatically')),
           );
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+            (route) => false,
+          );
         } catch (_) {}
       },
       verificationFailed: (FirebaseAuthException e) {
+        if (!mounted) return;
         setState(() { _sending = false; });
         String errorMessage = 'Verification failed: ${e.message}';
         if (e.code == 'invalid-phone-number') {
@@ -389,6 +402,7 @@ class _OTPScreenState extends State<OTPScreen> {
         );
       },
       codeSent: (String verificationId, int? resendToken) {
+        if (!mounted) return;
         setState(() { _verificationId = verificationId; });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -398,10 +412,12 @@ class _OTPScreenState extends State<OTPScreen> {
         );
       },
       codeAutoRetrievalTimeout: (String verificationId) {
+        if (!mounted) return;
         setState(() { _verificationId = verificationId; });
       },
     );
     } catch (e) {
+      if (!mounted) return;
       setState(() { _sending = false; });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -442,6 +458,10 @@ class _OTPScreenState extends State<OTPScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Phone verified')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        (route) => false,
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

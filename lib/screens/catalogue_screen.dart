@@ -1,156 +1,172 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../widgets/bottom_navigation_bar.dart';
+import 'dashboard_screen.dart';
 
 class CatalogueScreen extends StatelessWidget {
   const CatalogueScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // Header with light blue background
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: Color(0xFFE3F2FD),
-            ),
-            child: Row(
-              children: [
-                // Back button
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 24,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Title
-                Expanded(
-                  child: Text(
-                    'Catalogue',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const DashboardScreen()),
+          (route) => false,
+        );
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          children: [
+            // Header with light blue background
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Color(0xFFE3F2FD),
+              ),
+              child: Row(
+                children: [
+                  // Back button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                        (route) => false,
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 24,
                       color: Colors.black87,
                     ),
                   ),
-                ),
-                const SizedBox(width: 40), // Balance the back button
-              ],
-            ),
-          ),
-          
-          // Main content area with grid of product cards
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(16),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.75,
-                children: [
-                  _buildProductCard(
-                    'SlipBox - Sticker',
-                    '₹4,500',
-                    _buildSlipBoxStickerImage(true), // White printer
+                  const SizedBox(width: 16),
+                  // Title
+                  Expanded(
+                    child: Text(
+                      'Catalogue',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
                   ),
-                  _buildProductCard(
-                    'Slipbox - Sticker',
-                    '₹4,500',
-                    _buildSlipBoxStickerImage(false), // Black printer
-                  ),
-                  _buildProductCard(
-                    'Slip Paper',
-                    '₹25',
-                    _buildSlipPaperImage(),
-                  ),
-                  _buildProductCard(
-                    'Slip Sticker',
-                    '₹50',
-                    _buildSlipStickerImage(),
-                  ),
-                  _buildProductCard(
-                    'EVM - Thermocol',
-                    '₹150',
-                    _buildEVMThermocolImage(),
-                  ),
-                  _buildProductCard(
-                    'EVM - Plastic',
-                    '₹50',
-                    _buildEVMPlasticImage(),
-                  ),
-                  _buildProductCard(
-                    'Bulk WhatsApp',
-                    '₹0.85',
-                    _buildBulkWhatsAppImage(),
-                  ),
-                  _buildProductCard(
-                    'Bulk Video Call',
-                    '₹2',
-                    _buildBulkVideoCallImage(),
-                  ),
-                  _buildProductCard(
-                    'Bulk Voice Call',
-                    '₹0.25',
-                    _buildBulkVoiceCallImage(),
-                  ),
-                  _buildProductCard(
-                    'Bulk SMS',
-                    '₹0.25',
-                    _buildBulkSMSImage(),
-                  ),
-                  _buildProductCard(
-                    'Bulk RCS',
-                    '₹0.55',
-                    _buildBulkRCSImage(),
-                  ),
-                  _buildProductCard(
-                    'AR Video',
-                    '₹1',
-                    _buildARVideoImage(),
-                  ),
-                  _buildProductCard(
-                    'Voter Slip PDF',
-                    '₹1',
-                    _buildVoterSlipPDFImage(),
-                  ),
-                  _buildProductCard(
-                    'Family Slip PDF',
-                    '₹5',
-                    _buildFamilySlipPDFImage(),
-                  ),
-                  _buildProductCard(
-                    'Cyber Security',
-                    '₹1',
-                    _buildCyberSecurityImage(),
-                  ),
-                  _buildProductCard(
-                    'Content Creation',
-                    '₹1',
-                    _buildContentCreationImage(),
-                  ),
-                  _buildProductCard(
-                    'FORM-20 Analyst',
-                    '₹1',
-                    _buildForm20AnalystImage(),
-                  ),
+                  const SizedBox(width: 40), // Balance the back button
                 ],
               ),
             ),
-          ),
-          
-          // Bottom navigation bar
-          CustomBottomNavigationBar(currentIndex: 1), // 1 = Catalogue index
-        ],
+            
+            // Main content area with grid of product cards
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16),
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.75,
+                  children: [
+                    _buildProductCard(
+                      'SlipBox - Sticker',
+                      '₹4,500',
+                      _buildSlipBoxStickerImage(true), // White printer
+                    ),
+                    _buildProductCard(
+                      'Slipbox - Sticker',
+                      '₹4,500',
+                      _buildSlipBoxStickerImage(false), // Black printer
+                    ),
+                    _buildProductCard(
+                      'Slip Paper',
+                      '₹25',
+                      _buildSlipPaperImage(),
+                    ),
+                    _buildProductCard(
+                      'Slip Sticker',
+                      '₹50',
+                      _buildSlipStickerImage(),
+                    ),
+                    _buildProductCard(
+                      'EVM - Thermocol',
+                      '₹150',
+                      _buildEVMThermocolImage(),
+                    ),
+                    _buildProductCard(
+                      'EVM - Plastic',
+                      '₹50',
+                      _buildEVMPlasticImage(),
+                    ),
+                    _buildProductCard(
+                      'Bulk WhatsApp',
+                      '₹0.85',
+                      _buildBulkWhatsAppImage(),
+                    ),
+                    _buildProductCard(
+                      'Bulk Video Call',
+                      '₹2',
+                      _buildBulkVideoCallImage(),
+                    ),
+                    _buildProductCard(
+                      'Bulk Voice Call',
+                      '₹0.25',
+                      _buildBulkVoiceCallImage(),
+                    ),
+                    _buildProductCard(
+                      'Bulk SMS',
+                      '₹0.25',
+                      _buildBulkSMSImage(),
+                    ),
+                    _buildProductCard(
+                      'Bulk RCS',
+                      '₹0.55',
+                      _buildBulkRCSImage(),
+                    ),
+                    _buildProductCard(
+                      'AR Video',
+                      '₹1',
+                      _buildARVideoImage(),
+                    ),
+                    _buildProductCard(
+                      'Voter Slip PDF',
+                      '₹1',
+                      _buildVoterSlipPDFImage(),
+                    ),
+                    _buildProductCard(
+                      'Family Slip PDF',
+                      '₹5',
+                      _buildFamilySlipPDFImage(),
+                    ),
+                    _buildProductCard(
+                      'Cyber Security',
+                      '₹1',
+                      _buildCyberSecurityImage(),
+                    ),
+                    _buildProductCard(
+                      'Content Creation',
+                      '₹1',
+                      _buildContentCreationImage(),
+                    ),
+                    _buildProductCard(
+                      'FORM-20 Analyst',
+                      '₹1',
+                      _buildForm20AnalystImage(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Bottom navigation bar
+            CustomBottomNavigationBar(currentIndex: 1), // 1 = Catalogue index
+          ],
+        ),
       ),
     );
   }

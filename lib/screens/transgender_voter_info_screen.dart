@@ -1061,7 +1061,7 @@ class _TransgenderVoterInfoScreenState extends State<TransgenderVoterInfoScreen>
           ),
           Expanded(
             child: DropdownButtonFormField<String>(
-              value: value,
+              initialValue: value,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 15),
