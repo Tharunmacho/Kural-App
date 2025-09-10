@@ -259,11 +259,11 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
                           child: Switch(
                             value: printEnabled,
                             onChanged: onPrintChanged,
-                            thumbColor: MaterialStateProperty.resolveWith((states) {
+                            thumbColor: WidgetStateProperty.resolveWith((states) {
                               return Colors.white;
                             }),
-                            trackColor: MaterialStateProperty.resolveWith((states) {
-                              if (states.contains(MaterialState.selected)) {
+                            trackColor: WidgetStateProperty.resolveWith((states) {
+                              if (states.contains(WidgetState.selected)) {
                                 return Colors.green;
                               }
                               return Colors.red;
@@ -302,11 +302,11 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
                           child: Switch(
                             value: candidateEnabled,
                             onChanged: onCandidateChanged,
-                            thumbColor: MaterialStateProperty.resolveWith((states) {
+                            thumbColor: WidgetStateProperty.resolveWith((states) {
                               return Colors.white;
                             }),
-                            trackColor: MaterialStateProperty.resolveWith((states) {
-                              if (states.contains(MaterialState.selected)) {
+                            trackColor: WidgetStateProperty.resolveWith((states) {
+                              if (states.contains(WidgetState.selected)) {
                                 return Colors.green;
                               }
                               return Colors.red;

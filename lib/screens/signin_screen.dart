@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'otp_screen.dart';
 import 'recover_password_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dashboard_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -274,11 +275,22 @@ class _SignInScreenState extends State<SignInScreen> {
       final String savedPassword = (data['Password'] ?? '').toString();
 
       if (savedPassword == password) {
-        if (!mounted) return;
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const DashboardScreen()),
-          (route) => false,
-        );
+        // Sign in with Firebase Auth using phone number
+        try {
+          // Create a custom token or use anonymous auth for now
+          // Since we don't have a custom auth server, we'll use anonymous auth
+          // and store the phone number in the user's custom claims or local storage
+          await FirebaseAuth.instance.signInAnonymously();
+          
+          if (!mounted) return;
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+            (route) => false,
+          );
+        } catch (authError) {
+          debugPrint('Firebase Auth error: $authError');
+          _showMessage('Authentication error: $authError');
+        }
       } else {
         // Phone is authorized but password incorrect → show invalid password message
         _showMessage('Invalid password');
