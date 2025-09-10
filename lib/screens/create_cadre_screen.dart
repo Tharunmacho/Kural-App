@@ -369,7 +369,7 @@ class _CreateCadreScreenState extends State<CreateCadreScreen> {
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: DropdownButtonFormField<String>(
-        initialValue: value,
+        value: value,
         hint: Text(
           hintText,
           style: TextStyle(color: Color(0xFF1976D2)),

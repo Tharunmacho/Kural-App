@@ -451,7 +451,7 @@ class _MyCadreScreenState extends State<MyCadreScreen> with SingleTickerProvider
                           border: Border.all(color: Colors.grey[300]!),
                         ),
                         child: DropdownButtonFormField<String>(
-                          initialValue: selectedRole.isEmpty ? null : selectedRole,
+                          value: selectedRole.isEmpty ? null : selectedRole,
                           hint: Text(
                             'Select Role',
                             style: TextStyle(color: Colors.grey[500]),
@@ -493,7 +493,7 @@ class _MyCadreScreenState extends State<MyCadreScreen> with SingleTickerProvider
                           border: Border.all(color: Colors.grey[300]!),
                         ),
                         child: DropdownButtonFormField<String>(
-                          initialValue: selectedBooth.isEmpty ? null : selectedBooth,
+                          value: selectedBooth.isEmpty ? null : selectedBooth,
                           hint: Text(
                             'Select Booth',
                             style: TextStyle(color: Colors.grey[500]),

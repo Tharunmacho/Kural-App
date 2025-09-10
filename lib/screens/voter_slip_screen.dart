@@ -259,10 +259,15 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
                           child: Switch(
                             value: printEnabled,
                             onChanged: onPrintChanged,
-                            activeThumbColor: Colors.white,
-                            activeTrackColor: Colors.green,
-                            inactiveThumbColor: Colors.white,
-                            inactiveTrackColor: Colors.red,
+                            thumbColor: MaterialStateProperty.resolveWith((states) {
+                              return Colors.white;
+                            }),
+                            trackColor: MaterialStateProperty.resolveWith((states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return Colors.green;
+                              }
+                              return Colors.red;
+                            }),
                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                         ),
@@ -297,10 +302,15 @@ class _VoterSlipScreenState extends State<VoterSlipScreen> {
                           child: Switch(
                             value: candidateEnabled,
                             onChanged: onCandidateChanged,
-                            activeThumbColor: Colors.white,
-                            activeTrackColor: Colors.green,
-                            inactiveThumbColor: Colors.white,
-                            inactiveTrackColor: Colors.red,
+                            thumbColor: MaterialStateProperty.resolveWith((states) {
+                              return Colors.white;
+                            }),
+                            trackColor: MaterialStateProperty.resolveWith((states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return Colors.green;
+                              }
+                              return Colors.red;
+                            }),
                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                         ),

@@ -1197,7 +1197,7 @@ class _VoterInfoScreenState extends State<VoterInfoScreen> with TickerProviderSt
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: DropdownButtonFormField<String>(
-        initialValue: value,
+        value: value,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Color(0xFF1976D2)),
           border: InputBorder.none,

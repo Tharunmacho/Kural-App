@@ -550,32 +550,58 @@ class _VoterListScreenState extends State<VoterListScreen> {
                             
                             const SizedBox(height: 8),
                             
-                            // Family count with icon
+                            // Family count with icon (navigates to voter info)
                             if (voter['familyCount'] > 0)
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF1976D2).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.family_restroom,
-                                      color: Color(0xFF1976D2),
-                                      size: 16,
+                              GestureDetector(
+                                onTap: () {
+                                  final Map<String, dynamic> voterData = {
+                                    'serialNo': voter['serialNo'],
+                                    'section': '1',
+                                    'partNumber': widget.partNumber.toString(),
+                                    'name': voter['name'],
+                                    'tamilName': voter['tamilName'],
+                                    'fatherName': voter['relation'],
+                                    'fatherTamilName': voter['relation'],
+                                    'voterId': voter['voterId'],
+                                    'doorNo': voter['doorNo'],
+                                    'age': voter['age'],
+                                    'relation': voter['relation'],
+                                    'epicId': voter['voterId'],
+                                    'part': widget.partNumber.toString(),
+                                    'serial': voter['serialNo'],
+                                  };
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VoterInfoScreen(voterData: voterData),
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${voter['familyCount']} Members',
-                                      style: TextStyle(
-                                        fontSize: 12,
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF1976D2).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.family_restroom,
                                         color: Color(0xFF1976D2),
-                                        fontWeight: FontWeight.w500,
+                                        size: 16,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${voter['familyCount']} Members',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Color(0xFF1976D2),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                           ],
