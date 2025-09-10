@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dashboard_screen.dart';
@@ -16,8 +17,13 @@ class _OTPScreenState extends State<OTPScreen> {
   String? _verificationId;
   bool _sending = false;
 
+  // Cooldown handling to avoid rate limiting
+  int _cooldownSeconds = 0;
+  Timer? _cooldownTimer;
+
   @override
   void dispose() {
+    _cooldownTimer?.cancel();
     _mobileController.dispose();
     _codeController.dispose();
     super.dispose();
@@ -181,7 +187,7 @@ class _OTPScreenState extends State<OTPScreen> {
                       
                       // Send OTP button
                       ElevatedButton(
-                        onPressed: _sending ? null : _handleSendOTP,
+                        onPressed: (_sending || _cooldownSeconds > 0) ? null : _handleSendOTP,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF1976D2),
                           foregroundColor: Colors.white,
@@ -201,7 +207,9 @@ class _OTPScreenState extends State<OTPScreen> {
                                 ),
                               )
                             : Text(
-                                'Send OTP',
+                                _cooldownSeconds > 0
+                                    ? 'Send OTP (wait ${_cooldownSeconds}s)'
+                                    : 'Send OTP',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -213,9 +221,11 @@ class _OTPScreenState extends State<OTPScreen> {
                       
                       // Resend OTP link
                       TextButton(
-                        onPressed: _sending ? null : _handleResendOTP,
+                        onPressed: (_sending || _cooldownSeconds > 0) ? null : _handleResendOTP,
                         child: Text(
-                          'Resend OTP',
+                          _cooldownSeconds > 0
+                              ? 'Resend OTP in ${_cooldownSeconds}s'
+                              : 'Resend OTP',
                           style: TextStyle(
                             color: Color(0xFF1976D2),
                             fontSize: 14,
@@ -342,6 +352,26 @@ class _OTPScreenState extends State<OTPScreen> {
     return '+91$digitsOnly';
   }
 
+  void _startCooldown([int seconds = 60]) {
+    _cooldownTimer?.cancel();
+    setState(() {
+      _cooldownSeconds = seconds;
+    });
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (_cooldownSeconds <= 1) {
+        timer.cancel();
+        setState(() {
+          _cooldownSeconds = 0;
+        });
+      } else {
+        setState(() {
+          _cooldownSeconds -= 1;
+        });
+      }
+    });
+  }
+
   Future<void> _handleSendOTP() async {
     if (_mobileController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -357,65 +387,65 @@ class _OTPScreenState extends State<OTPScreen> {
     
     try {
       final phone = _formatPhoneNumber(_mobileController.text.trim());
-      
-      // Debug logging
       debugPrint('Sending OTP to: $phone');
-      
       await auth.verifyPhoneNumber(
         phoneNumber: phone,
-      timeout: const Duration(seconds: 60),
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        try {
-          await auth.signInWithCredential(credential);
+        timeout: const Duration(seconds: 60),
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          try {
+            await auth.signInWithCredential(credential);
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Phone verified automatically')),
+            );
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const DashboardScreen()),
+              (route) => false,
+            );
+          } catch (_) {}
+        },
+        verificationFailed: (FirebaseAuthException e) {
           if (!mounted) return;
+          setState(() { _sending = false; });
+          String errorMessage = 'Verification failed: ${e.message}';
+          if (e.code == 'invalid-phone-number') {
+            errorMessage = 'Invalid phone number format. Please enter a valid mobile number.';
+          } else if (e.code == 'too-many-requests') {
+            errorMessage = 'Too many requests. Please wait 1 minute before retrying.';
+            _startCooldown(60);
+          } else if (e.code == 'quota-exceeded') {
+            errorMessage = 'SMS quota exceeded. Please try again later.';
+            _startCooldown(120);
+          } else if (e.code == 'network-request-failed' || e.message?.contains('network') == true) {
+            errorMessage = 'Network error. Please check your internet connection and try again.';
+          }
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Phone verified automatically')),
-          );
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const DashboardScreen()),
-            (route) => false,
-          );
-        } catch (_) {}
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        if (!mounted) return;
-        setState(() { _sending = false; });
-        String errorMessage = 'Verification failed: ${e.message}';
-        if (e.code == 'invalid-phone-number') {
-          errorMessage = 'Invalid phone number format. Please enter a valid mobile number.';
-        } else if (e.code == 'too-many-requests') {
-          errorMessage = 'Too many requests. Please try again later.';
-        } else if (e.code == 'network-request-failed' || e.message?.contains('network') == true) {
-          errorMessage = 'Network error. Please check your internet connection and try again.';
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-            action: SnackBarAction(
-              label: 'Retry',
-              textColor: Colors.white,
-              onPressed: () => _handleSendOTP(),
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 4),
             ),
-          ),
-        );
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        if (!mounted) return;
-        setState(() { _verificationId = verificationId; });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('OTP sent to $phone'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        if (!mounted) return;
-        setState(() { _verificationId = verificationId; });
-      },
-    );
+          );
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          if (!mounted) return;
+          setState(() { 
+            _verificationId = verificationId; 
+            _sending = false; 
+          });
+          _startCooldown(60);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('OTP sent to $phone'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          if (!mounted) return;
+          setState(() { _verificationId = verificationId; _sending = false; });
+        },
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() { _sending = false; });

@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // Bypass app verification (reCAPTCHA/Play Integrity) during development/testing.
-  // This only affects debug/profile builds and is ignored in release builds.
-  assert(() {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
-    return true;
-  }());
+  // App verification is enabled for real OTP functionality
 
   runApp(const MyApp());
 }
