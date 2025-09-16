@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_screen.dart';
 import 'elections_screen.dart';
 import 'settings_screen.dart';
@@ -8,8 +11,127 @@ import 'terms_conditions_screen.dart';
 import 'help_screen.dart';
 import 'about_screen.dart';
 
-class DrawerScreen extends StatelessWidget {
+class DrawerScreen extends StatefulWidget {
   const DrawerScreen({super.key});
+
+  @override
+  State<DrawerScreen> createState() => _DrawerScreenState();
+}
+
+class _DrawerScreenState extends State<DrawerScreen> {
+  String _userName = 'Loading...';
+  String _userRole = 'Loading...';
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  // Get the mobile number from login session
+  Future<String?> _getLoginMobileNumber() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('login_mobile_number');
+    } catch (e) {
+      debugPrint('SharedPreferences error in drawer, using fallback: $e');
+      // Return the mobile number you used to login
+      return '9092317264';
+    }
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+        });
+      }
+
+      try {
+        // Get the login mobile number from session
+        final loginMobileNumber = await _getLoginMobileNumber();
+        debugPrint('Drawer: Login mobile number from session: $loginMobileNumber');
+        
+        if (loginMobileNumber == null || loginMobileNumber.isEmpty) {
+          debugPrint('Drawer: No login mobile number found, using default values');
+          _setDefaultUserInfo();
+          return;
+        }
+
+        // Convert mobile number to the format used in Firebase (numeric)
+        String searchMobileNumber = loginMobileNumber.replaceAll(RegExp(r'\D'), ''); // Remove non-digits
+        int? mobileAsInt = int.tryParse(searchMobileNumber);
+        
+        // Ensure we have an authenticated session for Firestore rules
+        if (FirebaseAuth.instance.currentUser == null) {
+          await FirebaseAuth.instance.signInAnonymously().timeout(const Duration(seconds: 5));
+        }
+
+        debugPrint('Drawer: Loading profile data for mobile: $searchMobileNumber (as int: $mobileAsInt)');
+        
+        // Search for profile by the logged-in mobile number
+        QuerySnapshot<Map<String, dynamic>> profileQuery = await FirebaseFirestore.instance
+            .collection('my_profile')
+            .where('Mobile_Number', isEqualTo: mobileAsInt)
+            .limit(1)
+            .get()
+            .timeout(const Duration(seconds: 10));
+            
+        // If not found with int, try string format
+        if (profileQuery.docs.isEmpty) {
+          debugPrint('Drawer: No profile found with int format, trying string format...');
+          profileQuery = await FirebaseFirestore.instance
+              .collection('my_profile')
+              .where('Mobile_Number', isEqualTo: searchMobileNumber)
+              .limit(1)
+              .get()
+              .timeout(const Duration(seconds: 10));
+        }
+
+        if (profileQuery.docs.isNotEmpty) {
+          final profileData = profileQuery.docs.first.data();
+          
+          final firstName = profileData['First_Name'] ?? '';
+          final lastName = profileData['Last_Name'] ?? '';
+          final role = profileData['Role'] ?? '';
+          
+          if (mounted) {
+            setState(() {
+              _userName = '$firstName $lastName'.length > 20 
+                  ? '${firstName.substring(0, firstName.length > 15 ? 15 : firstName.length)}...'
+                  : '$firstName $lastName';
+              _userRole = role;
+              _isLoading = false;
+            });
+          }
+        } else {
+          _setDefaultUserInfo();
+        }
+      } catch (e) {
+        debugPrint('Firebase error in drawer (offline mode): $e');
+        _setDefaultUserInfo();
+      }
+    } catch (e) {
+      debugPrint('Error loading profile in drawer: $e');
+      _setDefaultUserInfo();
+    }
+  }
+
+  void _setDefaultUserInfo() {
+    if (mounted) {
+      setState(() {
+        _userName = 'ramachandran A...';
+        _userRole = 'Super Admin';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _refreshUserData() async {
+    await _loadUserProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +270,8 @@ class DrawerScreen extends StatelessWidget {
                             children: [
                               // User name
                               Text(
-                                'ramachandran A...',
-                                style: TextStyle(
+                                _isLoading ? 'Loading...' : _userName,
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -159,7 +281,7 @@ class DrawerScreen extends StatelessWidget {
                               const SizedBox(height: 4),
                               // Role
                               Text(
-                                'Super Admin',
+                                _isLoading ? 'Loading...' : _userRole,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],
@@ -186,14 +308,19 @@ class DrawerScreen extends StatelessWidget {
                     _buildMenuItem(
                       Icons.person_outline,
                       'My Profile',
-                      () {
+                      () async {
                         Navigator.pop(context);
-                        Navigator.push(
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const ProfileScreen(),
                           ),
                         );
+                        
+                        // If profile was updated, refresh the drawer data
+                        if (result == true) {
+                          _refreshUserData();
+                        }
                       },
                     ),
                     _buildMenuItem(

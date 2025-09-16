@@ -3,6 +3,7 @@ import 'otp_screen.dart';
 import 'recover_password_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -282,6 +283,16 @@ class _SignInScreenState extends State<SignInScreen> {
       final String savedPassword = (data['password'] ?? '').toString();
 
       if (savedPassword == password) {
+        // Store the login mobile number for profile use (fallback method)
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('login_mobile_number', phone);
+          debugPrint('Stored login mobile number: $phone');
+        } catch (e) {
+          debugPrint('SharedPreferences error (using fallback): $e');
+          // Continue with login even if SharedPreferences fails
+        }
+        
         if (!mounted) return;
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const DashboardScreen()),
