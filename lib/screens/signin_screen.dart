@@ -235,33 +235,40 @@ class _SignInScreenState extends State<SignInScreen> {
     final String password = _passwordController.text;
 
     try {
-      // Try to find the phone regardless of how it's stored (string/number/+91)
-      QuerySnapshot<Map<String, dynamic>> query = await FirebaseFirestore.instance
-          .collection('kural')
-          .where('Mobile Number', isEqualTo: phone)
+      // Ensure we have an authenticated session for Firestore rules
+      if (FirebaseAuth.instance.currentUser == null) {
+        await FirebaseAuth.instance.signInAnonymously();
+      }
+
+      // Match your Firestore structure: collection kural_authentication with fields phone_number, password
+      final col = FirebaseFirestore.instance.collection('kural_authentication');
+
+      // Try direct match as stored (string/number/+91)
+      QuerySnapshot<Map<String, dynamic>> query = await col
+          .where('phone_number', isEqualTo: phone)
           .limit(1)
           .get();
 
+      // If not found, try numeric-only match
       if (query.docs.isEmpty) {
-        // Try numeric match
         int? numericPhone;
-        try { numericPhone = int.parse(phone.replaceAll(RegExp(r'\D'), '')); } catch (_) {}
+        try {
+          numericPhone = int.parse(phone.replaceAll(RegExp(r'\D'), ''));
+        } catch (_) {}
         if (numericPhone != null) {
-          query = await FirebaseFirestore.instance
-              .collection('kural')
-              .where('Mobile Number', isEqualTo: numericPhone)
+          query = await col
+              .where('phone_number', isEqualTo: numericPhone)
               .limit(1)
               .get();
         }
       }
 
+      // If still not found, try +91 prefixed E.164 format
       if (query.docs.isEmpty) {
-        // Try with +91 prefix if not present
         final digits = phone.replaceAll(RegExp(r'\D'), '');
         final withCountry = digits.startsWith('91') ? '+$digits' : '+91$digits';
-        query = await FirebaseFirestore.instance
-            .collection('kural')
-            .where('Mobile Number', isEqualTo: withCountry)
+        query = await col
+            .where('phone_number', isEqualTo: withCountry)
             .limit(1)
             .get();
       }
@@ -272,31 +279,18 @@ class _SignInScreenState extends State<SignInScreen> {
       }
 
       final data = query.docs.first.data();
-      final String savedPassword = (data['Password'] ?? '').toString();
+      final String savedPassword = (data['password'] ?? '').toString();
 
       if (savedPassword == password) {
-        // Sign in with Firebase Auth using phone number
-        try {
-          // Create a custom token or use anonymous auth for now
-          // Since we don't have a custom auth server, we'll use anonymous auth
-          // and store the phone number in the user's custom claims or local storage
-          await FirebaseAuth.instance.signInAnonymously();
-          
-          if (!mounted) return;
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const DashboardScreen()),
-            (route) => false,
-          );
-        } catch (authError) {
-          debugPrint('Firebase Auth error: $authError');
-          _showMessage('Authentication error: $authError');
-        }
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          (route) => false,
+        );
       } else {
-        // Phone is authorized but password incorrect → show invalid password message
         _showMessage('Invalid password');
       }
     } catch (e) {
-      // Surface the exact error to help diagnose configuration or rules issues
       debugPrint('Login error: $e');
       _showMessage('Login error: $e');
     }

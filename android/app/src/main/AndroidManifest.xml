@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <application
-        android:label="Kural AI"
+        android:label="Kural"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

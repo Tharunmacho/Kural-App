@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "627707659040",
-    "project_id": "kural-dae0e",
-    "storage_bucket": "kural-dae0e.firebasestorage.app"
+    "project_number": "789841451791",
+    "project_id": "kural-app-ebbcb",
+    "storage_bucket": "kural-app-ebbcb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:627707659040:android:245e8ddbd4db91d84fcd45",
+        "mobilesdk_app_id": "1:789841451791:android:470ce0743ba793a598fc7a",
         "android_client_info": {
           "package_name": "com.example.teampro"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBuGzEQJqkx4BtSLAnix7XcP5fHwVlHjaQ"
+          "current_key": "AIzaSyASzr_m3mpE3KQ84uGvQQYPR7x7a309FJw"
         }
       ],
       "services": {
