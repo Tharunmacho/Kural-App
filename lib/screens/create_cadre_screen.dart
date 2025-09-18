@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class CreateCadreScreen extends StatefulWidget {
   const CreateCadreScreen({super.key});
@@ -70,7 +71,7 @@ class _CreateCadreScreenState extends State<CreateCadreScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Create Cadre',
+          AppLocalizations.of(context)?.createCadre ?? 'Create Cadre',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -447,3 +448,4 @@ class _CreateCadreScreenState extends State<CreateCadreScreen> {
     super.dispose();
   }
 }
+

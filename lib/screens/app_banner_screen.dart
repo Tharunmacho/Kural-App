@@ -1,4 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import '../l10n/app_localizations.dart';
 
 class AppBannerScreen extends StatefulWidget {
   const AppBannerScreen({super.key});
@@ -8,383 +13,332 @@ class AppBannerScreen extends StatefulWidget {
 }
 
 class _AppBannerScreenState extends State<AppBannerScreen> {
-  final TextEditingController _searchController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
+  List<String> _bannerImages = [];
+  bool _isLoading = true;
 
-  // Sample banner data
-  final List<Map<String, dynamic>> banners = [
-    {
-      'name': 'ADMK 1.jpg',
-      'image': 'assets/banners/admk1.jpg',
-      'type': 'political'
-    },
-    {
-      'name': 'admk 2.jpg', 
-      'image': 'assets/banners/admk2.jpg',
-      'type': 'political'
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadBannerImages();
+  }
+
+  Future<void> _loadBannerImages() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bannerImagesJson = prefs.getString('banner_images') ?? '[]';
+      final List<dynamic> bannerImagesList = json.decode(bannerImagesJson);
+      
+      setState(() {
+        _bannerImages = bannerImagesList.cast<String>();
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error loading banner images: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _saveBannerImages() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bannerImagesJson = json.encode(_bannerImages);
+      await prefs.setString('banner_images', bannerImagesJson);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)?.success ?? 'Banner images saved successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error saving banner images: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)?.error ?? 'Error saving banner images'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 80,
+      );
+      
+      if (image != null) {
+        setState(() {
+          _bannerImages.add(image.path);
+        });
+        await _saveBannerImages();
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)?.error ?? 'Error picking image'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeImage(int index) async {
+    setState(() {
+      _bannerImages.removeAt(index);
+    });
+    await _saveBannerImages();
+  }
+
+  void _showRemoveDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+        content: Text(AppLocalizations.of(context)?.confirm ?? 'Are you sure you want to remove this banner image?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _removeImage(index);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: Column(
-        children: [
-          // Header with light blue background
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 40, bottom: 20, left: 20, right: 20),
-            decoration: BoxDecoration(
-              color: Color(0xFFE3F2FD),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+      backgroundColor: Color(0xFFF5F7FA),
+      appBar: AppBar(
+        backgroundColor: Color(0xFF1976D2),
+        foregroundColor: Colors.white,
+        title: Text(
+          AppLocalizations.of(context)?.appBanner ?? 'App Banner',
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width * 0.045,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add_photo_alternate),
+            onPressed: _pickImage,
+            tooltip: 'Add Banner Image',
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF1976D2),
               ),
-            ),
-            child: Row(
+            )
+          : Column(
               children: [
-                // Back button
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 24,
-                    color: Colors.black87,
+                // Header section
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Manage Banner Images',
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                      Text(
+                        'Add images that will be displayed as swipeable banners on the dashboard',
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.035,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 16),
-                // Title
+                
+                // Banner images list
                 Expanded(
-                  child: Text(
-                    'App Home Banners',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
+                  child: _bannerImages.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.photo_library_outlined,
+                                size: MediaQuery.of(context).size.width * 0.15,
+                                color: Colors.grey[400],
+                              ),
+                              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                              Text(
+                                'No banner images added',
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width * 0.04,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                              Text(
+                                'Tap the + icon to add banner images',
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width * 0.035,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
+                          itemCount: _bannerImages.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).size.height * 0.02,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Image
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      topRight: Radius.circular(12),
+                                    ),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: MediaQuery.of(context).size.height * 0.2,
+                                      child: Image.file(
+                                        File(_bannerImages[index]),
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            color: Colors.grey[200],
+                                            child: Center(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.broken_image,
+                                                    size: MediaQuery.of(context).size.width * 0.08,
+                                                    color: Colors.grey[400],
+                                                  ),
+                                                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                                  Text(
+                                                    'Image not found',
+                                                    style: TextStyle(
+                                                      fontSize: MediaQuery.of(context).size.width * 0.03,
+                                                      color: Colors.grey[500],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  
+                                  // Controls
+                                  Padding(
+                                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'Banner ${index + 1}',
+                                            style: TextStyle(
+                                              fontSize: MediaQuery.of(context).size.width * 0.04,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () => _showRemoveDialog(index),
+                                          icon: Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.red[600],
+                                            size: MediaQuery.of(context).size.width * 0.06,
+                                          ),
+                                          tooltip: 'Remove banner',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                 ),
-                const SizedBox(width: 40), // Balance the back button
               ],
             ),
-          ),
-          
-          // Search section
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: Colors.grey[300]!),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search App Banners',
-                  hintStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 16,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.grey[600],
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 15,
-                  ),
-                ),
-                onChanged: (value) {
-                  // Implement search functionality
-                  setState(() {});
-                },
-              ),
-            ),
-          ),
-
-          // Existing Banners Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Existing Banners',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Banners List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: banners.length,
-              itemBuilder: (context, index) {
-                final banner = banners[index];
-                return _buildBannerCard(banner);
-              },
-            ),
-          ),
-        ],
+      
+      // Floating action button
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pickImage,
+        backgroundColor: Color(0xFF1976D2),
+        tooltip: 'Add Banner Image',
+        child: Icon(
+          Icons.add_photo_alternate,
+          color: Colors.white,
+        ),
       ),
     );
-  }
-
-  Widget _buildBannerCard(Map<String, dynamic> banner) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Banner Image
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-              child: _buildBannerImage(banner['name']),
-            ),
-          ),
-          
-          // Banner Name
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              banner['name'],
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBannerImage(String bannerName) {
-    // Create different banner representations based on the name
-    if (bannerName.toLowerCase().contains('admk 1')) {
-      // First banner - political meeting style
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1565C0),
-              Color(0xFF42A5F5),
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Background pattern
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                ),
-              ),
-            ),
-            // Political figures representation
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Left figure
-                  SizedBox(
-                    width: 80,
-                    height: 120,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFD4B8A3),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Right figure
-                  SizedBox(
-                    width: 80,
-                    height: 120,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFD4B8A3),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Microphones at bottom
-            Positioned(
-              bottom: 20,
-              left: 0,
-              right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) => Container(
-                  margin: EdgeInsets.symmetric(horizontal: 4),
-                  width: 20,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                )),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Second banner - rally/meeting style
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF4CAF50),
-              Color(0xFF81C784),
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Banner background
-            Positioned.fill(
-              child: Container(
-                color: Colors.white.withValues(alpha: 0.1),
-              ),
-            ),
-            // Political banner representation
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Top row - political figures
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(3, (index) => Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFD4B8A3),
-                        shape: BoxShape.circle,
-                      ),
-                    )),
-                  ),
-                  const SizedBox(height: 20),
-                  // Banner text representation
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'ADMK',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Bottom row - seated figures
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(5, (index) => Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    )),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 }

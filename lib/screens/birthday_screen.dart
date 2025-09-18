@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'voter_info_screen.dart';
 
 class BirthdayVoter {
@@ -219,7 +220,7 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          'Birthday',
+                          AppLocalizations.of(context)?.birthday ?? 'Birthday',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 24,
@@ -1106,17 +1107,17 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _buildSearchField('Mobile No', _mobileController),
+                      _buildSearchField(AppLocalizations.of(context)?.mobileNo ?? 'Mobile No', _mobileController),
                       const SizedBox(height: 20),
-                      _buildSearchField('PartNo', _partNoController),
+                      _buildSearchField(AppLocalizations.of(context)?.partNo ?? 'PartNo', _partNoController),
                       const SizedBox(height: 20),
-                      _buildSearchField('Serial No', _serialNoController),
+                      _buildSearchField(AppLocalizations.of(context)?.serialNo ?? 'Serial No', _serialNoController),
                       const SizedBox(height: 20),
-                      _buildSearchField('EPIC Id', _epicIdController),
+                      _buildSearchField(AppLocalizations.of(context)?.epicId ?? 'EPIC Id', _epicIdController),
                       const SizedBox(height: 20),
-                      _buildSearchField('Voter First Name', _voterFirstNameController),
+                      _buildSearchField(AppLocalizations.of(context)?.voterFirstName ?? 'Voter First Name', _voterFirstNameController),
                       const SizedBox(height: 20),
-                      _buildSearchField('Voter Last Name', _voterLastNameController),
+                      _buildSearchField(AppLocalizations.of(context)?.voterLastName ?? 'Voter Last Name', _voterLastNameController),
                       const SizedBox(height: 20),
                       _buildSearchField('Relation First Name', _relationFirstNameController),
                     ],
@@ -1138,7 +1139,7 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
                         ),
                       ),
                       child: Text(
-                        'Clear',
+                        AppLocalizations.of(context)?.clear ?? 'Clear',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

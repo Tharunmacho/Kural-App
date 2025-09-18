@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../screens/dashboard_screen.dart';
 import '../screens/catalogue_screen.dart';
 import '../screens/slip_box_screen.dart';
@@ -28,15 +29,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: _buildBottomNavItem(context, 'Report', Icons.trending_up_outlined, 0)),
-          Expanded(child: _buildBottomNavItem(context, 'Catalogue', Icons.list_alt_outlined, 1)),
+          Expanded(child: _buildBottomNavItem(context, AppLocalizations.of(context)?.report ?? 'Report', Icons.trending_up_outlined, 0)),
+          Expanded(child: _buildBottomNavItem(context, AppLocalizations.of(context)?.catalogue ?? 'Catalogue', Icons.list_alt_outlined, 1)),
           Expanded(
             child: Center(
               child: _buildHomeButton(context, 2),
             ),
           ),
-          Expanded(child: _buildBottomNavItem(context, 'Slip', Icons.inventory_outlined, 3)),
-          Expanded(child: _buildBottomNavItem(context, 'Poll', Icons.how_to_vote_outlined, 4)),
+          Expanded(child: _buildBottomNavItem(context, AppLocalizations.of(context)?.slip ?? 'Slip', Icons.inventory_outlined, 3)),
+          Expanded(child: _buildBottomNavItem(context, AppLocalizations.of(context)?.poll ?? 'Poll', Icons.how_to_vote_outlined, 4)),
         ],
       ),
     );

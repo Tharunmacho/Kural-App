@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'fatherless_screen.dart';
 import 'share_screen.dart';
 
@@ -339,11 +340,11 @@ class _FatherlessVoterInfoScreenState extends State<FatherlessVoterInfoScreen> w
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                                     Expanded(child: _buildTab('Basic', 0, Icons.description_outlined, onTap: _showBasicInfoModal)),
+                                     Expanded(child: _buildTab(AppLocalizations.of(context)?.basic ?? 'Basic', 0, Icons.description_outlined, onTap: _showBasicInfoModal)),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildTab('Family', 1, Icons.family_restroom)),
+                  Expanded(child: _buildTab(AppLocalizations.of(context)?.family ?? 'Family', 1, Icons.family_restroom)),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildTab('Share', 2, Icons.share, onTap: () {
+                  Expanded(child: _buildTab(AppLocalizations.of(context)?.share ?? 'Share', 2, Icons.share, onTap: () {
                     // Convert FatherlessVoter to voterData format for ShareScreen
                     Map<String, dynamic> voterData = {
                       'serialNo': widget.voter.serialNo,
@@ -370,7 +371,7 @@ class _FatherlessVoterInfoScreenState extends State<FatherlessVoterInfoScreen> w
                     );
                   })),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildTab('Friends', 3, Icons.group)),
+                  Expanded(child: _buildTab(AppLocalizations.of(context)?.friends ?? 'Friends', 3, Icons.group)),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class CasteCategoryScreen extends StatefulWidget {
   const CasteCategoryScreen({super.key});
@@ -100,7 +101,7 @@ class _CasteCategoryScreenState extends State<CasteCategoryScreen> {
                 // Title
                 Expanded(
                   child: Text(
-                    'Caste Category',
+                    AppLocalizations.of(context)?.casteCategory ?? 'Caste Category',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 22,

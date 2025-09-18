@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'fatherless_voter_info_screen.dart';
 import 'voter_info_screen.dart';
 
@@ -115,7 +116,7 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Fatherless',
+                        AppLocalizations.of(context)?.fatherless ?? 'Fatherless',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -127,8 +128,8 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
                   GestureDetector(
                     onTap: _showFilterModal,
                     child: Container(
-                      width: 40,
-                      height: 40,
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -137,7 +138,7 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
                       child: Icon(
                         Icons.tune,
                         color: Colors.grey[600],
-                        size: 24,
+                        size: MediaQuery.of(context).size.width * 0.06,
                       ),
                     ),
                   ),
@@ -145,11 +146,13 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
               ),
             ),
             
-            const SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.025),
             
             // Search section
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 16),
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
@@ -158,23 +161,28 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
               child: Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.05,
+                    ),
                     child: Icon(
                       Icons.search,
                       color: Color(0xFF1976D2),
-                      size: 24,
+                      size: MediaQuery.of(context).size.width * 0.06,
                     ),
                   ),
                   Expanded(
                     child: GestureDetector(
                       onTap: _showAdvancedSearch,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.04,
+                          vertical: MediaQuery.of(context).size.height * 0.018,
+                        ),
                         child: Text(
                           'Voter Id or Voter Name',
                           style: TextStyle(
                             color: Colors.grey[400],
-                            fontSize: 16,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                           ),
                         ),
                       ),
@@ -184,25 +192,27 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
               ),
             ),
             
-            const SizedBox(height: 30),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.035),
             
             // Statistics cards section
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 16),
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+              ),
               child: Row(
                 children: [
                   Expanded(
                     child: _buildStatCard('Male:', '3380', Colors.green[100]!, Colors.green),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                   Expanded(
                     child: _buildStatCard('Female:', '2332', Colors.pink[100]!, Colors.pink),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                   Expanded(
                     child: _buildStatCard('Others:', '7', Colors.grey[200]!, Colors.grey[600]!),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                   Expanded(
                     child: _buildStatCard('Total:', '5719', Colors.blue[100]!, Colors.blue),
                   ),
@@ -210,17 +220,21 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
               ),
             ),
             
-            const SizedBox(height: 30),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.03),
             
             // Voters list
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
+                ),
                 itemCount: voters.length,
                 itemBuilder: (context, index) {
                   final voter = voters[index];
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).size.height * 0.02,
+                    ),
                     child: _buildVoterCard(voter),
                   );
                 },
@@ -229,7 +243,9 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
             
             // Bottom navigation
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.height * 0.02,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -260,8 +276,14 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
 
   Widget _buildStatCard(String label, String count, Color backgroundColor, Color? textColor) {
     return Container(
-      height: 80, // Fixed height for consistent sizing
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      constraints: BoxConstraints(
+        minHeight: MediaQuery.of(context).size.height * 0.1,
+        maxHeight: MediaQuery.of(context).size.height * 0.12,
+      ),
+      padding: EdgeInsets.symmetric(
+        vertical: MediaQuery.of(context).size.height * 0.015,
+        horizontal: MediaQuery.of(context).size.width * 0.02,
+      ),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
@@ -272,23 +294,32 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.03,
+                color: Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
-          Text(
-            count,
-            style: TextStyle(
-              fontSize: 20,
-              color: textColor ?? Colors.black87,
-              fontWeight: FontWeight.bold,
+          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
+          Flexible(
+            child: Text(
+              count,
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.05,
+                color: textColor ?? Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -634,13 +665,13 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    _buildSearchField('Mobile No', _mobileController),
+                    _buildSearchField(AppLocalizations.of(context)?.mobileNo ?? 'Mobile No', _mobileController),
                     const SizedBox(height: 16),
-                    _buildSearchField('PartNo', _partNoController),
+                    _buildSearchField(AppLocalizations.of(context)?.partNo ?? 'PartNo', _partNoController),
                     const SizedBox(height: 16),
-                    _buildSearchField('Serial No', _serialNoController),
+                    _buildSearchField(AppLocalizations.of(context)?.serialNo ?? 'Serial No', _serialNoController),
                     const SizedBox(height: 16),
-                    _buildSearchField('EPIC Id', _epicIdController),
+                    _buildSearchField(AppLocalizations.of(context)?.epicId ?? 'EPIC Id', _epicIdController),
                     const SizedBox(height: 16),
                     _buildSearchField('Voter First Name', _voterFirstNameController),
                     const SizedBox(height: 16),
@@ -651,7 +682,7 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
                     _buildSearchField('Relation Last Name', _relationLastNameController),
                     const SizedBox(height: 16),
                     _buildSearchField('Age', _ageController),
-                    const SizedBox(height: 30),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                   ],
                 ),
               ),
@@ -805,27 +836,27 @@ class _FatherlessScreenState extends State<FatherlessScreen> {
                     children: [
                       // Age filter
                       _buildAgeFilter(setModalState),
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                       
                       // Gender filter
                       _buildGenderFilter(setModalState),
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                       
                       // Voter History filter
                       _buildVoterHistoryFilter(setModalState),
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                       
                       // Voter Category filter
                       _buildVoterCategoryFilter(setModalState),
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                       
                       // Political Party filter
                       _buildPoliticalPartyFilter(setModalState),
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                       
                       // Religion filter
                       _buildReligionFilter(setModalState),
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                     ],
                   ),
                 ),

@@ -1,0 +1,846 @@
+{
+  "chooseLanguage": "Choose Language",
+  "@chooseLanguage": {
+    "description": "Language selection screen title"
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Submit button text"
+  },
+  "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Dashboard screen title"
+  },
+  "profile": "My Profile",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "election": "Election",
+  "@election": {
+    "description": "Election screen title"
+  },
+  "electionManagement": "Election Management",
+  "@electionManagement": {
+    "description": "Election management title"
+  },
+  "viewElection": "View Election",
+  "@viewElection": {
+    "description": "View election screen title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign out button text"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "First name field label"
+  },
+  "lastName": "Last Name",
+  "@lastName": {
+    "description": "Last name field label"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "mobileNumber": "Mobile Number",
+  "@mobileNumber": {
+    "description": "Mobile number field label"
+  },
+  "role": "Role",
+  "@role": {
+    "description": "Role field label"
+  },
+  "appLanguage": "App Language",
+  "@appLanguage": {
+    "description": "App Language menu item"
+  },
+  "changePassword": "Change Password",
+  "@changePassword": {
+    "description": "Change password menu item"
+  },
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy policy menu item"
+  },
+  "help": "Help",
+  "@help": {
+    "description": "Help menu item"
+  },
+  "cadreManager": "Cadre Manager",
+  "@cadreManager": {
+    "description": "Cadre manager category"
+  },
+  "voterManager": "Voter Manager",
+  "@voterManager": {
+    "description": "Voter manager category"
+  },
+  "familyManager": "Family Manager",
+  "@familyManager": {
+    "description": "Family manager category"
+  },
+  "surveyManager": "Survey Manager",
+  "@surveyManager": {
+    "description": "Survey manager category"
+  },
+  "searchPlaceholder": "Voter Id or Voter Name",
+  "@searchPlaceholder": {
+    "description": "Search input placeholder text"
+  },
+  "cadre": "Cadre",
+  "@cadre": {
+    "description": "Cadre category"
+  },
+  "part": "Part",
+  "@part": {
+    "description": "Part category"
+  },
+  "voter": "Voter",
+  "@voter": {
+    "description": "Voter category"
+  },
+  "newVoters": "New",
+  "@newVoters": {
+    "description": "New category"
+  },
+  "transgender": "Transgender",
+  "@transgender": {
+    "description": "Transgender category"
+  },
+  "fatherless": "Fatherless",
+  "@fatherless": {
+    "description": "Fatherless category"
+  },
+  "guardian": "Guardian",
+  "@guardian": {
+    "description": "Guardian category"
+  },
+  "overseas": "Overseas",
+  "@overseas": {
+    "description": "Overseas category"
+  },
+  "birthday": "Birthday",
+  "@birthday": {
+    "description": "Birthday category"
+  },
+  "star": "Star",
+  "@star": {
+    "description": "Star category"
+  },
+  "mobile": "Mobile",
+  "@mobile": {
+    "description": "Mobile category"
+  },
+  "above80": "80 Above",
+  "@above80": {
+    "description": "80 Above category"
+  },
+  "report": "Report",
+  "@report": {
+    "description": "Report bottom nav"
+  },
+  "catalogue": "Catalogue",
+  "@catalogue": {
+    "description": "Catalogue bottom nav"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home bottom nav"
+  },
+  "slip": "Slip",
+  "@slip": {
+    "description": "Slip bottom nav"
+  },
+  "poll": "Poll",
+  "@poll": {
+    "description": "Poll bottom nav"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search text"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading text"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error text"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Success text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Next button"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Done button"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes button"
+  },
+  "no": "No",
+  "@no": {
+    "description": "No button"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications title"
+  },
+  "about": "About",
+  "@about": {
+    "description": "About menu item"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "Username field"
+  },
+  "name": "Name",
+  "@name": {
+    "description": "Name field"
+  },
+  "address": "Address",
+  "@address": {
+    "description": "Address field"
+  },
+  "phone": "Phone",
+  "@phone": {
+    "description": "Phone field"
+  },
+  "date": "Date",
+  "@date": {
+    "description": "Date field"
+  },
+  "time": "Time",
+  "@time": {
+    "description": "Time field"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Total text"
+  },
+  "active": "Active",
+  "@active": {
+    "description": "Active status"
+  },
+  "inactive": "Inactive",
+  "@inactive": {
+    "description": "Inactive status"
+  },
+  "male": "Male",
+  "@male": {
+    "description": "Male gender"
+  },
+  "female": "Female",
+  "@female": {
+    "description": "Female gender"
+  },
+  "comingSoon": "Coming Soon!",
+  "@comingSoon": {
+    "description": "Coming soon message"
+  },
+  "profileUpdatedSuccessfully": "Profile updated successfully!",
+  "@profileUpdatedSuccessfully": {
+    "description": "Profile update success message"
+  },
+  "profileSavedLocally": "Profile saved locally. Will sync when online.",
+  "@profileSavedLocally": {
+    "description": "Profile saved offline message"
+  },
+  "errorSavingProfile": "Error saving profile",
+  "@errorSavingProfile": {
+    "description": "Profile save error message"
+  },
+  "mobileNumberCannotBeChanged": "Mobile number cannot be changed",
+  "@mobileNumberCannotBeChanged": {
+    "description": "Mobile number readonly message"
+  },
+  "yourElections": "Your Elections",
+  "@yourElections": {
+    "description": "Your Elections menu item"
+  },
+  "termsConditions": "Terms & Conditions",
+  "@termsConditions": {
+    "description": "Terms and Conditions menu item"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "First Name field label"
+  },
+  "lastName": "Last Name",
+  "@lastName": {
+    "description": "Last Name field label"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "mobileNumber": "Mobile Number",
+  "@mobileNumber": {
+    "description": "Mobile Number field label"
+  },
+  "role": "Role",
+  "@role": {
+    "description": "Role field label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button"
+  },
+  "logoutConfirmation": "Are you sure you want to logout?",
+  "@logoutConfirmation": {
+    "description": "Logout confirmation message"
+  },
+  "loggedOutSuccessfully": "Logged out successfully",
+  "@loggedOutSuccessfully": {
+    "description": "Logout success message"
+  },
+  "searchByEpicOrName": "Search by EPIC number or name",
+  "@searchByEpicOrName": {
+    "description": "Search placeholder text"
+  },
+  "noFriendsFound": "No friends Found",
+  "@noFriendsFound": {
+    "description": "No friends found message"
+  },
+  "friends": "Friends",
+  "@friends": {
+    "description": "Friends label"
+  },
+  "mother": "Mother",
+  "@mother": {
+    "description": "Mother relationship"
+  },
+  "doorNo": "Door No",
+  "@doorNo": {
+    "description": "Door number label"
+  },
+  "voterName": "Voter Name",
+  "@voterName": {
+    "description": "Voter name field"
+  },
+  "age": "Age",
+  "@age": {
+    "description": "Age field"
+  },
+  "gender": "Gender",
+  "@gender": {
+    "description": "Gender field"
+  },
+  "relation": "Relation",
+  "@relation": {
+    "description": "Relation field"
+  },
+  "epicId": "EPIC ID",
+  "@epicId": {
+    "description": "EPIC ID field"
+  },
+  "partNo": "Part No",
+  "@partNo": {
+    "description": "Part number field"
+  },
+  "serialNo": "Serial No",
+  "@serialNo": {
+    "description": "Serial number field"
+  },
+  "voterId": "Voter ID",
+  "@voterId": {
+    "description": "Voter ID field"
+  },
+  "mobileNo": "Mobile No",
+  "@mobileNo": {
+    "description": "Mobile number field"
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Submit button"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button"
+  },
+  "filter": "Filter",
+  "@filter": {
+    "description": "Filter button"
+  },
+  "basic": "Basic",
+  "@basic": {
+    "description": "Basic tab"
+  },
+  "family": "Family",
+  "@family": {
+    "description": "Family tab"
+  },
+  "share": "Share",
+  "@share": {
+    "description": "Share tab"
+  },
+  "voterFirstName": "Voter First Name",
+  "@voterFirstName": {
+    "description": "Voter first name field"
+  },
+  "voterLastName": "Voter Last Name",
+  "@voterLastName": {
+    "description": "Voter last name field"
+  },
+  "relationFirstName": "Relation First Name",
+  "@relationFirstName": {
+    "description": "Relation first name field"
+  },
+  "relationLastName": "Relation Last Name",
+  "@relationLastName": {
+    "description": "Relation last name field"
+  },
+  "transgender": "Transgender",
+  "@transgender": {
+    "description": "Transgender category"
+  },
+  "birthday": "Birthday",
+  "@birthday": {
+    "description": "Birthday category"
+  },
+  "overseas": "Overseas",
+  "@overseas": {
+    "description": "Overseas category"
+  },
+  "guardian": "Guardian",
+  "@guardian": {
+    "description": "Guardian category"
+  },
+  "fatherless": "Fatherless",
+  "@fatherless": {
+    "description": "Fatherless category"
+  },
+  "above80": "Above 80",
+  "@above80": {
+    "description": "Above 80 category"
+  },
+  "newVoters": "New",
+  "@newVoters": {
+    "description": "New label"
+  },
+  "cadre": "Cadre",
+  "@cadre": {
+    "description": "Cadre category"
+  },
+  "voter": "Voter",
+  "@voter": {
+    "description": "Voter category"
+  },
+  "star": "Star",
+  "@star": {
+    "description": "Star category"
+  },
+  "mobile": "Mobile",
+  "@mobile": {
+    "description": "Mobile category"
+  },
+  "part": "Part",
+  "@part": {
+    "description": "Part label"
+  },
+  "createCadre": "Create Cadre",
+  "@createCadre": {
+    "description": "Create Cadre title"
+  },
+  "elections": "Elections",
+  "@elections": {
+    "description": "Elections title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings title"
+  },
+  "help": "Help",
+  "@help": {
+    "description": "Help title"
+  },
+  "about": "About",
+  "@about": {
+    "description": "About title"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications title"
+  },
+  "history": "History",
+  "@history": {
+    "description": "History title"
+  },
+  "catalogue": "Catalogue",
+  "@catalogue": {
+    "description": "Catalogue title"
+  },
+  "slipBox": "Slip Box",
+  "@slipBox": {
+    "description": "Slip Box title"
+  },
+  "pollDay": "Poll Day",
+  "@pollDay": {
+    "description": "Poll Day title"
+  },
+  "survey": "Survey",
+  "@survey": {
+    "description": "Survey title"
+  },
+  "familyManager": "Family Manager",
+  "@familyManager": {
+    "description": "Family Manager title"
+  },
+  "cadreManager": "Cadre Manager",
+  "@cadreManager": {
+    "description": "Cadre Manager title"
+  },
+  "voterManager": "Voter Manager",
+  "@voterManager": {
+    "description": "Voter Manager title"
+  },
+  "surveyManager": "Survey Manager",
+  "@surveyManager": {
+    "description": "Survey Manager title"
+  },
+  "noFamily": "No Family",
+  "@noFamily": {
+    "description": "No Family category"
+  },
+  "schemes": "Schemes",
+  "@schemes": {
+    "description": "Schemes category"
+  },
+  "parties": "Parties",
+  "@parties": {
+    "description": "Parties category"
+  },
+  "religions": "Religions",
+  "@religions": {
+    "description": "Religions category"
+  },
+  "castes": "Castes",
+  "@castes": {
+    "description": "Castes category"
+  },
+  "subCastes": "Sub Castes",
+  "@subCastes": {
+    "description": "Sub Castes category"
+  },
+  "casteCategory": "Caste Category",
+  "@casteCategory": {
+    "description": "Caste Category title"
+  },
+  "voterSlip": "Voter Slip",
+  "@voterSlip": {
+    "description": "Voter Slip title"
+  },
+  "phoneCall": "Phone Call",
+  "@phoneCall": {
+    "description": "Phone Call title"
+  },
+  "feedback": "Feedback",
+  "@feedback": {
+    "description": "Feedback title"
+  },
+  "appBanner": "App Banner",
+  "@appBanner": {
+    "description": "App Banner title"
+  },
+  "partDetails": "Part Details",
+  "@partDetails": {
+    "description": "Part Details title"
+  },
+  "familyDetails": "Family Details",
+  "@familyDetails": {
+    "description": "Family Details title"
+  },
+  "partNumbers": "Part Numbers",
+  "@partNumbers": {
+    "description": "Part Numbers title"
+  },
+  "voterCategory": "Voter Category",
+  "@voterCategory": {
+    "description": "Voter Category title"
+  },
+  "voterLanguage": "Voter Language",
+  "@voterLanguage": {
+    "description": "Voter Language title"
+  },
+  "voterPartNumbers": "Voter Part Numbers",
+  "@voterPartNumbers": {
+    "description": "Voter Part Numbers title"
+  },
+  "voterList": "Voter List",
+  "@voterList": {
+    "description": "Voter List title"
+  },
+  "myCadre": "My Cadre",
+  "@myCadre": {
+    "description": "My Cadre title"
+  },
+  "partMap": "Part Map",
+  "@partMap": {
+    "description": "Part Map title"
+  },
+  "recoverPassword": "Recover Password",
+  "@recoverPassword": {
+    "description": "Recover Password title"
+  },
+  "otpScreen": "OTP Screen",
+  "@otpScreen": {
+    "description": "OTP Screen title"
+  },
+  "report": "Report",
+  "@report": {
+    "description": "Report tab"
+  },
+  "slip": "Slip",
+  "@slip": {
+    "description": "Slip tab"
+  },
+  "poll": "Poll",
+  "@poll": {
+    "description": "Poll tab"
+  },
+  "noFamilyDetected": "No Family Detected",
+  "@noFamilyDetected": {
+    "description": "No Family Detected message"
+  },
+  "expectedVoters": "Expected Voters",
+  "@expectedVoters": {
+    "description": "Expected Voters"
+  },
+  "actualVoters": "Actual Voters",
+  "@actualVoters": {
+    "description": "Actual Voters"
+  },
+  "missingVoters": "Missing Voters",
+  "@missingVoters": {
+    "description": "Missing Voters"
+  },
+  "unexpectedVoters": "Unexpected Voters",
+  "@unexpectedVoters": {
+    "description": "Unexpected Voters"
+  },
+  "analysisCompleted": "Analysis Completed",
+  "@analysisCompleted": {
+    "description": "Analysis Completed"
+  },
+  "politicalMeeting": "Political Meeting",
+  "@politicalMeeting": {
+    "description": "Political Meeting"
+  },
+  "cadreOverview": "Cadre Overview",
+  "@cadreOverview": {
+    "description": "Cadre Overview"
+  },
+  "totalCadres": "Total Cadres",
+  "@totalCadres": {
+    "description": "Total Cadres"
+  },
+  "cadreActive": "Cadre Active",
+  "@cadreActive": {
+    "description": "Cadre Active"
+  },
+  "cadreInActive": "Cadre InActive",
+  "@cadreInActive": {
+    "description": "Cadre InActive"
+  },
+  "loggedIn": "Logged In",
+  "@loggedIn": {
+    "description": "Logged In"
+  },
+  "notLogged": "Not Logged",
+  "@notLogged": {
+    "description": "Not Logged"
+  },
+  "setElection": "Set Election",
+  "@setElection": {
+    "description": "Set Election"
+  },
+  "appBanner": "App Banner",
+  "@appBanner": {
+    "description": "App Banner"
+  },
+  "history": "History",
+  "@history": {
+    "description": "History"
+  },
+  "category": "Category",
+  "@category": {
+    "description": "Category"
+  },
+  "voterSlip": "Voter Slip",
+  "@voterSlip": {
+    "description": "Voter Slip"
+  },
+  "party": "Party",
+  "@party": {
+    "description": "Party"
+  },
+  "religion": "Religion",
+  "@religion": {
+    "description": "Religion"
+  },
+  "caste": "Caste",
+  "@caste": {
+    "description": "Caste"
+  },
+  "subCaste": "Sub-Caste",
+  "@subCaste": {
+    "description": "Sub-Caste"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language"
+  },
+  "schemes": "Schemes",
+  "@schemes": {
+    "description": "Schemes"
+  },
+  "setDefaultElection": "Set Default Election",
+  "@setDefaultElection": {
+    "description": "Set Default Election"
+  },
+  "update": "UPDATE",
+  "@update": {
+    "description": "Update button"
+  },
+  "close": "CLOSE",
+  "@close": {
+    "description": "Close button"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search"
+  },
+  "advanceSearch": "Advance Search",
+  "@advanceSearch": {
+    "description": "Advanced search title"
+  },
+  "volunteerTracking": "Volunteers Tracking",
+  "@volunteerTracking": {
+    "description": "Volunteer tracking screen title"
+  },
+  "searchByNameOrMobile": "Search by name or mobile number...",
+  "@searchByNameOrMobile": {
+    "description": "Search placeholder for cadre manager"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button text"
+  },
+  "partNo": "Part No",
+  "@partNo": {
+    "description": "Part number field label"
+  },
+  "serialNo": "Serial No",
+  "@serialNo": {
+    "description": "Serial number field label"
+  },
+  "epicId": "EPIC Id",
+  "@epicId": {
+    "description": "EPIC ID field label"
+  },
+  "voterFirstName": "Voter First Name",
+  "@voterFirstName": {
+    "description": "Voter first name field label"
+  },
+  "voterLastName": "Voter Last Name",
+  "@voterLastName": {
+    "description": "Voter last name field label"
+  },
+  "relationFirstName": "Relation First Name",
+  "@relationFirstName": {
+    "description": "Relation first name field label"
+  }
+}
+
+    "description": "Advanced search title"
+  },
+  "volunteerTracking": "Volunteers Tracking",
+  "@volunteerTracking": {
+    "description": "Volunteer tracking screen title"
+  },
+  "searchByNameOrMobile": "Search by name or mobile number...",
+  "@searchByNameOrMobile": {
+    "description": "Search placeholder for cadre manager"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button text"
+  },
+  "partNo": "Part No",
+  "@partNo": {
+    "description": "Part number field label"
+  },
+  "serialNo": "Serial No",
+  "@serialNo": {
+    "description": "Serial number field label"
+  },
+  "epicId": "EPIC Id",
+  "@epicId": {
+    "description": "EPIC ID field label"
+  },
+  "voterFirstName": "Voter First Name",
+  "@voterFirstName": {
+    "description": "Voter first name field label"
+  },
+  "voterLastName": "Voter Last Name",
+  "@voterLastName": {
+    "description": "Voter last name field label"
+  },
+  "relationFirstName": "Relation First Name",
+  "@relationFirstName": {
+    "description": "Relation first name field label"
+  }
+}

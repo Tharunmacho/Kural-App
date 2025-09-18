@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ViewElectionScreen extends StatefulWidget {
   const ViewElectionScreen({super.key});
@@ -12,6 +14,8 @@ class ViewElectionScreen extends StatefulWidget {
 
 class _ViewElectionScreenState extends State<ViewElectionScreen> {
   final ScrollController _scrollController = ScrollController();
+  final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
   
   // Text editing controllers for all fields
   final TextEditingController _categoryController = TextEditingController();
@@ -503,23 +507,26 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.03, 
+          vertical: MediaQuery.of(context).size.height * 0.015,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Step 1: Create Election
             _buildSectionTitle('Step 1: Create Election'),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Election Picture Section
             _buildSubSectionTitle('Election Picture'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             _buildElectionPictureSection(),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Category Section
             _buildSubSectionTitle('Category'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             _buildDropdownField(_selectedCategory, _categoryOptions, (String? newValue) {
               if (newValue != null) {
                 setState(() {
@@ -528,14 +535,14 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                 _checkForChanges();
               }
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Election Information Section
             _buildSubSectionTitle('Election Information'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             
             _buildFieldLabel('Election Type'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDropdownField(_selectedElectionType, _electionTypeOptions, (String? newValue) {
               if (newValue != null) {
                 setState(() {
@@ -544,10 +551,10 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                 _checkForChanges();
               }
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Election Body'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDropdownField(_selectedElectionBody, _electionBodyOptions, (String? newValue) {
               if (newValue != null) {
                 setState(() {
@@ -556,15 +563,15 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                 _checkForChanges();
               }
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Country'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_countryController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('State'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDropdownField(_selectedState, _stateOptions, (String? newValue) {
               if (newValue != null) {
                 setState(() {
@@ -573,49 +580,49 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                 _checkForChanges();
               }
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('PC Name'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_pcNameController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('AC Name'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_acNameController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Urban Name'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_urbanNameController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Rural Name'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_ruralNameController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Election Name'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_electionNameController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Election Description'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_electionDescriptionController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Election Date'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedElectionDate, 'Select Election Date', (DateTime? newDate) {
               setState(() {
                 _selectedElectionDate = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Status'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDropdownField(_selectedStatus, _statusOptions, (String? newValue) {
               if (newValue != null) {
                 setState(() {
@@ -624,130 +631,130 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                 _checkForChanges();
               }
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Booth Information Section
             _buildSubSectionTitle('Booth Information'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             
             _buildFieldLabel('Total Number of Booths'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_totalBoothsController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Total All Booths'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_totalAllBoothsController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Number of Pink Booths'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_pinkBoothsController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Voter Information Section
             _buildSubSectionTitle('Voter Information'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             
             _buildFieldLabel('Total Voters'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_totalVotersController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Male Voters'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_maleVotersController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Female Voters'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_femaleVotersController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Transgender Voters'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_transgenderVotersController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Remarks Section
             _buildSubSectionTitle('Remarks'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             
             _buildFieldLabel('Remarks'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildInputField(_remarksController),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             // Calendar of Event Section
             _buildSubSectionTitle('Calendar of Event'),
-            const SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             
             _buildFieldLabel('Gazette Notification'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedGazetteDate, 'Select Gazette Notification Date', (DateTime? newDate) {
               setState(() {
                 _selectedGazetteDate = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Last Date for Filling Nomination'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedLastDateNomination, 'Select Last Date for Nomination', (DateTime? newDate) {
               setState(() {
                 _selectedLastDateNomination = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Scrutiny Nomination'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedScrutinyDate, 'Select Scrutiny Date', (DateTime? newDate) {
               setState(() {
                 _selectedScrutinyDate = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Last Date for Withdrawal of Nomination'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedLastDateWithdrawal, 'Select Last Date for Withdrawal', (DateTime? newDate) {
               setState(() {
                 _selectedLastDateWithdrawal = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Date of Poll'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedDateOfPoll, 'Select Date of Poll', (DateTime? newDate) {
               setState(() {
                 _selectedDateOfPoll = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Date of Counting of Votes'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedDateOfCounting, 'Select Date of Counting', (DateTime? newDate) {
               setState(() {
                 _selectedDateOfCounting = newDate;
               });
             }),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
             
             _buildFieldLabel('Completion Deadline'),
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.008),
             _buildDateField(_selectedCompletionDeadline, 'Select Completion Deadline', (DateTime? newDate) {
               setState(() {
                 _selectedCompletionDeadline = newDate;
               });
             }),
-            const SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.025),
             
             // Edit Button
             _buildEditButton(),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.018),
           ],
         ),
       ),
@@ -758,10 +765,11 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 24,
+        fontSize: MediaQuery.of(context).size.width * 0.06,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
       ),
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -769,10 +777,11 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: MediaQuery.of(context).size.width * 0.045,
         fontWeight: FontWeight.bold,
         color: Color(0xFF1565C0), // Dark blue color
       ),
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -780,10 +789,11 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
     return Text(
       label,
       style: TextStyle(
-        fontSize: 16,
+        fontSize: MediaQuery.of(context).size.width * 0.04,
         fontWeight: FontWeight.w600,
         color: Color(0xFF1565C0), // Dark blue color
       ),
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -792,51 +802,92 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
       children: [
         // Profile picture
         Container(
-          width: 80,
-          height: 80,
+          width: MediaQuery.of(context).size.width * 0.18,
+          height: MediaQuery.of(context).size.width * 0.18,
           decoration: BoxDecoration(
             color: Colors.grey[200],
             shape: BoxShape.circle,
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/icons/star.png', // Using star icon as placeholder
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.person,
-                    size: 40,
-                    color: Colors.grey[600],
-                  ),
-                );
-              },
+            border: Border.all(
+              color: _selectedImage != null ? Colors.green : Colors.grey[300]!,
+              width: 2,
             ),
           ),
-        ),
-        const SizedBox(width: 20),
-        
-        // Upload Photo Button
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.black87,
-            borderRadius: BorderRadius.circular(25),
+          child: ClipOval(
+            child: _selectedImage != null
+                ? Image.file(
+                    _selectedImage!,
+                    width: MediaQuery.of(context).size.width * 0.18,
+                    height: MediaQuery.of(context).size.width * 0.18,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/icons/star.png', // Using star icon as placeholder
+                    width: MediaQuery.of(context).size.width * 0.18,
+                    height: MediaQuery.of(context).size.width * 0.18,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width * 0.18,
+                        height: MediaQuery.of(context).size.width * 0.18,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.image,
+                          size: MediaQuery.of(context).size.width * 0.07,
+                          color: Colors.grey[600],
+                        ),
+                      );
+                    },
+                  ),
           ),
-          child: Text(
-            'Upload Photo',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+        ),
+        SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+        
+        // Upload Photo Button - Wrapped in Expanded to prevent overflow
+        Expanded(
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+                vertical: MediaQuery.of(context).size.height * 0.012,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.upload,
+                    color: Colors.white,
+                    size: MediaQuery.of(context).size.width * 0.035,
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.015),
+                  Flexible(
+                    child: Text(
+                      'Upload Photo',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.035,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -847,7 +898,7 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
   Widget _buildInputField(TextEditingController controller) {
     return Container(
       width: double.infinity,
-      height: 44,
+      height: MediaQuery.of(context).size.height * 0.05,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -863,7 +914,10 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
           color: Colors.black87,
         ),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.03, 
+            vertical: MediaQuery.of(context).size.height * 0.01,
+          ),
           border: InputBorder.none,
           hintText: 'Enter value',
           hintStyle: TextStyle(
@@ -877,7 +931,7 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
   Widget _buildDropdownField(String value, List<String> options, Function(String?) onChanged) {
     return Container(
       width: double.infinity,
-      height: 44,
+      height: MediaQuery.of(context).size.height * 0.05,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -900,7 +954,10 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
           color: Colors.black87,
         ),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.03, 
+            vertical: MediaQuery.of(context).size.height * 0.01,
+          ),
           border: InputBorder.none,
         ),
         dropdownColor: Colors.white,
@@ -913,8 +970,11 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
       onTap: () => _selectDate(selectedDate, onChanged),
       child: Container(
         width: double.infinity,
-        height: 44,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        height: MediaQuery.of(context).size.height * 0.05,
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.03, 
+          vertical: MediaQuery.of(context).size.height * 0.01,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -980,7 +1040,7 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
       onTap: _isSaving ? null : (_hasChanges ? _saveElection : null),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02),
         decoration: BoxDecoration(
           color: (_hasChanges ? Colors.green : Colors.black87).withValues(alpha: _isSaving ? 0.6 : 1.0),
           borderRadius: BorderRadius.circular(8),
@@ -1003,7 +1063,7 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                       'Saving...',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: MediaQuery.of(context).size.width * 0.045,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1013,7 +1073,7 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
                   _hasChanges ? 'Save' : 'Edit',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: MediaQuery.of(context).size.width * 0.045,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1201,6 +1261,45 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
         setState(() {
           _isSaving = false;
         });
+      }
+    }
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 80,
+      );
+      
+      if (image != null) {
+        setState(() {
+          _selectedImage = File(image.path);
+        });
+        _checkForChanges(); // Mark as changed when image is selected
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Election photo selected successfully!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error selecting image: $e'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     }
   }

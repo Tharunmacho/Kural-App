@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/language_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -9,6 +12,23 @@ class LanguageScreen extends StatefulWidget {
 
 class _LanguageScreenState extends State<LanguageScreen> {
   String selectedLanguage = 'Englis';
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with current language from provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+        setState(() {
+          selectedLanguage = languageProvider.getCurrentLanguageName();
+        });
+        debugPrint('Language screen initialized with: $selectedLanguage');
+      } catch (e) {
+        debugPrint('Error initializing language screen: $e');
+      }
+    });
+  }
 
   final List<Map<String, String>> languages = [
     {'name': 'Englis', 'character': 'A'},
@@ -32,42 +52,42 @@ class _LanguageScreenState extends State<LanguageScreen> {
               padding: const EdgeInsets.symmetric(vertical: 30),
               child: Column(
                 children: [
-                  // TEAM Logo
+                  // Login Logo
                   Container(
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: Color(0xFF1976D2),
                       shape: BoxShape.circle,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'TEAM',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Model Election\nAnalytics Manager',
-                          style: TextStyle(
-                            fontSize: 8,
-                            color: Colors.white,
-                            height: 1.2,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/icons/Login_sign.png',
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          debugPrint('Error loading Login_sign.png: $error');
+                          return Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: Color(0xFF1976D2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.language,
+                              size: 60,
+                              color: Colors.white,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   SizedBox(height: 30),
                   // Title
                   Text(
-                    'Choose Language',
+                    AppLocalizations.of(context)?.chooseLanguage ?? 'Choose Language',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -99,6 +119,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                         setState(() {
                           selectedLanguage = language['name']!;
                         });
+                        debugPrint('Language selected: ${language['name']}');
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -152,9 +173,30 @@ class _LanguageScreenState extends State<LanguageScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(30),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  debugPrint('Submit button pressed with selectedLanguage: $selectedLanguage');
+                  
                   // Handle language selection
-                  Navigator.pop(context, selectedLanguage);
+                  final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+                  final navigator = Navigator.of(context);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  
+                  debugPrint('Current locale before change: ${languageProvider.currentLocale}');
+                  await languageProvider.changeLanguage(selectedLanguage);
+                  debugPrint('Current locale after change: ${languageProvider.currentLocale}');
+                  
+                  // Show a confirmation snackbar
+                  if (mounted) {
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(
+                        content: Text('Language changed successfully!'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                  
+                  navigator.pop(selectedLanguage);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
@@ -165,7 +207,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                   ),
                 ),
                 child: Text(
-                  'Submit',
+                  AppLocalizations.of(context)?.submit ?? 'Submit',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

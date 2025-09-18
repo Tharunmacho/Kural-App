@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'create_cadre_screen.dart';
 
 class MyCadreScreen extends StatefulWidget {
@@ -47,7 +48,7 @@ class _MyCadreScreenState extends State<MyCadreScreen> with SingleTickerProvider
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'My Cadre',
+          AppLocalizations.of(context)?.myCadre ?? 'My Cadre',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -631,3 +632,4 @@ class _MyCadreScreenState extends State<MyCadreScreen> with SingleTickerProvider
     super.dispose();
   }
 }
+

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'new_voters_screen.dart';
 
 class CadreManagerScreen extends StatefulWidget {
@@ -78,7 +79,7 @@ class _CadreManagerScreenState extends State<CadreManagerScreen> with TickerProv
                       Expanded(
                         child: Center(
                           child: Text(
-                            'Volunteers Tracking',
+                            AppLocalizations.of(context)?.volunteerTracking ?? 'Volunteers Tracking',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class _CadreManagerScreenState extends State<CadreManagerScreen> with TickerProv
                           child: TextField(
                             controller: _searchController,
                             decoration: InputDecoration(
-                              hintText: 'Search by name or mobile number...',
+                              hintText: AppLocalizations.of(context)?.searchByNameOrMobile ?? 'Search by name or mobile number...',
                               hintStyle: TextStyle(
                                 color: Colors.grey[400],
                                 fontSize: 16,
@@ -281,3 +282,4 @@ class _CadreManagerScreenState extends State<CadreManagerScreen> with TickerProv
     );
   }
 }
+

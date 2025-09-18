@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 import 'profile_screen.dart';
 import 'elections_screen.dart';
 import 'settings_screen.dart';
@@ -135,6 +136,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('DrawerScreen build called with locale: ${Localizations.localeOf(context)}');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -305,9 +307,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 child: ListView(
                   padding: const EdgeInsets.only(top: 20),
                   children: [
-                    _buildMenuItem(
-                      Icons.person_outline,
-                      'My Profile',
+                      _buildMenuItem(
+                        Icons.person_outline,
+                        AppLocalizations.of(context)?.profile ?? 'My Profile',
                       () async {
                         Navigator.pop(context);
                         final result = await Navigator.push(
@@ -323,9 +325,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         }
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.how_to_vote_outlined,
-                      'Your Elections',
+                      _buildMenuItem(
+                        Icons.how_to_vote_outlined,
+                        AppLocalizations.of(context)?.yourElections ?? 'Your Elections',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -336,9 +338,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.settings_outlined,
-                      'Settings',
+                      _buildMenuItem(
+                        Icons.settings_outlined,
+                        AppLocalizations.of(context)?.settings ?? 'Settings',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -349,9 +351,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.language_outlined,
-                      'App Language',
+                      _buildMenuItem(
+                        Icons.language_outlined,
+                        AppLocalizations.of(context)?.appLanguage ?? 'App Language',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -362,16 +364,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.lock_outline,
-                      'Change Password',
+                      _buildMenuItem(
+                        Icons.lock_outline,
+                        AppLocalizations.of(context)?.changePassword ?? 'Change Password',
                       () {
                         _showChangePasswordDialog(context);
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.privacy_tip_outlined,
-                      'Privacy Policy',
+                      _buildMenuItem(
+                        Icons.privacy_tip_outlined,
+                        AppLocalizations.of(context)?.privacyPolicy ?? 'Privacy Policy',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -382,9 +384,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.description_outlined,
-                      'Terms & Conditions',
+                      _buildMenuItem(
+                        Icons.description_outlined,
+                        AppLocalizations.of(context)?.termsConditions ?? 'Terms & Conditions',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -395,9 +397,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.help_outline,
-                      'Help',
+                      _buildMenuItem(
+                        Icons.help_outline,
+                        AppLocalizations.of(context)?.help ?? 'Help',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -408,9 +410,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.info_outline,
-                      'About',
+                      _buildMenuItem(
+                        Icons.info_outline,
+                        AppLocalizations.of(context)?.about ?? 'About',
                       () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -421,9 +423,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         );
                       },
                     ),
-                    _buildMenuItem(
-                      Icons.logout_outlined,
-                      'Logout',
+                      _buildMenuItem(
+                        Icons.logout_outlined,
+                        AppLocalizations.of(context)?.logout ?? 'Logout',
                       () {
                         _showLogoutDialog(context);
                       },
@@ -496,9 +498,9 @@ void _showChangePasswordDialog(BuildContext context) {
             // Title and Close button
             Row(
               children: [
-                const Expanded(
-                  child:                               Text(
-                                'Change Password',
+                Expanded(
+                  child: Text(
+                                AppLocalizations.of(context)?.changePassword ?? 'Change Password',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -593,7 +595,7 @@ void _showLogoutDialog(BuildContext context) {
             ),
             const SizedBox(width: 12),
             Text(
-              'Logout',
+              AppLocalizations.of(context)?.logout ?? 'Logout',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -603,7 +605,7 @@ void _showLogoutDialog(BuildContext context) {
           ],
         ),
         content: Text(
-          'Are you sure you want to logout?',
+          AppLocalizations.of(context)?.logoutConfirmation ?? 'Are you sure you want to logout?',
           style: TextStyle(
             fontSize: 16,
             color: Colors.black87,
@@ -634,7 +636,7 @@ void _showLogoutDialog(BuildContext context) {
               // Show logout confirmation
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Logged out successfully'),
+                  content: Text(AppLocalizations.of(context)?.loggedOutSuccessfully ?? 'Logged out successfully'),
                   backgroundColor: Colors.black,
                 ),
               );
@@ -647,7 +649,7 @@ void _showLogoutDialog(BuildContext context) {
               ),
             ),
             child: Text(
-              'Logout',
+              AppLocalizations.of(context)?.logout ?? 'Logout',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

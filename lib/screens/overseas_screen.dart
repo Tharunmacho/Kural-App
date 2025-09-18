@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'voter_info_screen.dart';
 
 class OverseasVoter {
@@ -169,7 +170,7 @@ class _OverseasScreenState extends State<OverseasScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          'Overseas',
+                          AppLocalizations.of(context)?.overseas ?? 'Overseas',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 24,
@@ -683,11 +684,11 @@ class _OverseasScreenState extends State<OverseasScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _buildSearchField('Mobile No', _mobileController),
+                      _buildSearchField(AppLocalizations.of(context)?.mobileNo ?? 'Mobile No', _mobileController),
                       const SizedBox(height: 20),
-                      _buildSearchField('PartNo', _partNoController),
+                      _buildSearchField(AppLocalizations.of(context)?.partNo ?? 'PartNo', _partNoController),
                       const SizedBox(height: 20),
-                      _buildSearchField('Serial No', _serialNoController),
+                      _buildSearchField(AppLocalizations.of(context)?.serialNo ?? 'Serial No', _serialNoController),
                       const SizedBox(height: 20),
                       _buildSearchField('EPIC Id', _epicIdController),
                       const SizedBox(height: 20),

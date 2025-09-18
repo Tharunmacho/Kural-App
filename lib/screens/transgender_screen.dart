@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'transgender_voter_info_screen.dart';
 import 'voter_info_screen.dart';
 import '../widgets/unified_voter_filter.dart';
@@ -116,7 +117,7 @@ class _TransgenderScreenState extends State<TransgenderScreen> {
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Transgender',
+                        AppLocalizations.of(context)?.transgender ?? 'Transgender',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -632,13 +633,13 @@ class _TransgenderScreenState extends State<TransgenderScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    _buildSearchField('Mobile No', _mobileController),
+                    _buildSearchField(AppLocalizations.of(context)?.mobileNo ?? 'Mobile No', _mobileController),
                     const SizedBox(height: 16),
-                    _buildSearchField('PartNo', _partNoController),
+                    _buildSearchField(AppLocalizations.of(context)?.partNo ?? 'PartNo', _partNoController),
                     const SizedBox(height: 16),
-                    _buildSearchField('Serial No', _serialNoController),
+                    _buildSearchField(AppLocalizations.of(context)?.serialNo ?? 'Serial No', _serialNoController),
                     const SizedBox(height: 16),
-                    _buildSearchField('EPIC Id', _epicIdController),
+                    _buildSearchField(AppLocalizations.of(context)?.epicId ?? 'EPIC Id', _epicIdController),
                     const SizedBox(height: 16),
                     _buildSearchField('Voter First Name', _voterFirstNameController),
                     const SizedBox(height: 16),

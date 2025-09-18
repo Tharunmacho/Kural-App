@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'voter_info_screen.dart';
 import '../widgets/unified_voter_filter.dart';
 
@@ -149,7 +150,7 @@ class _GuardianScreenState extends State<GuardianScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          'Guardian',
+                          AppLocalizations.of(context)?.guardian ?? 'Guardian',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 24,
@@ -712,7 +713,7 @@ class _GuardianScreenState extends State<GuardianScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    _buildSearchField('Mobile Number', Icons.phone, _mobileController),
+                    _buildSearchField(AppLocalizations.of(context)?.mobileNo ?? 'Mobile Number', Icons.phone, _mobileController),
                     const SizedBox(height: 16),
                     _buildSearchField('Part Number', Icons.location_on, _partNoController),
                     const SizedBox(height: 16),

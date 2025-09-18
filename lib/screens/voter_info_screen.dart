@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'share_screen.dart';
 
 class VoterInfoScreen extends StatefulWidget {
@@ -610,7 +611,7 @@ class _VoterInfoScreenState extends State<VoterInfoScreen> with TickerProviderSt
                       ),
                     );
                   }),
-                  _buildTab('Friends', 3, Icons.people_outline, onTap: _showFriendsModal),
+                  _buildTab(AppLocalizations.of(context)?.friends ?? 'Friends', 3, Icons.people_outline, onTap: _showFriendsModal),
                 ],
               ),
             ),
@@ -1375,7 +1376,7 @@ Age: ${widget.voterData['age']}
 Relation: ${widget.voterData['relation']}
 Part: ${widget.voterData['part']}
 Serial: ${widget.voterData['serial']}
-Door No: ${widget.voterData['doorNo']}
+${AppLocalizations.of(context)?.doorNo ?? 'Door No'}: ${widget.voterData['doorNo']}
     ''';
   }
 
@@ -1958,7 +1959,7 @@ Door No: ${widget.voterData['doorNo']}
                   ),
                   Spacer(),
                   Text(
-                    'Door No ${widget.voterData['doorNo']}',
+                    '${AppLocalizations.of(context)?.doorNo ?? 'Door No'} ${widget.voterData['doorNo']}',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1979,7 +1980,7 @@ Door No: ${widget.voterData['doorNo']}
                   _buildModalTab('Basic', false),
                   _buildModalTab('Family', false),
                   _buildModalTab('Share', false),
-                  _buildModalTab('Friends', true),
+                  _buildModalTab(AppLocalizations.of(context)?.friends ?? 'Friends', true),
                 ],
               ),
             ),
@@ -2005,7 +2006,7 @@ Door No: ${widget.voterData['doorNo']}
                           children: [
                             Expanded(
                               child: Text(
-                                'Search by EPIC number or name',
+                                AppLocalizations.of(context)?.searchByEpicOrName ?? 'Search by EPIC number or name',
                                 style: TextStyle(
                                   color: Colors.grey[500],
                                   fontSize: 16,
@@ -2058,7 +2059,7 @@ Door No: ${widget.voterData['doorNo']}
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No friends Found',
+                      AppLocalizations.of(context)?.noFriendsFound ?? 'No friends Found',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.grey[500],
@@ -2248,7 +2249,7 @@ Door No: ${widget.voterData['doorNo']}
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              widget.voterData['doorNo'] ?? 'Door No 1-24',
+                              '${AppLocalizations.of(context)?.doorNo ?? 'Door No'} ${widget.voterData['doorNo'] ?? '1-24'}',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black87,

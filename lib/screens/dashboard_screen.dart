@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 import 'part_numbers_screen.dart';
 import 'family_manager_screen.dart';
 import 'survey_screen.dart';
@@ -31,6 +35,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _autoSwipeTimer;
+  List<String> _bannerImages = [];
+  bool _isLoadingBanners = true;
   
   // Election dropdown state
   String selectedElection = '119 - Thondamuthur';
@@ -69,7 +75,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _loadBannerImages();
     _startAutoSwipe();
+  }
+
+  Future<void> _loadBannerImages() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bannerImagesJson = prefs.getString('banner_images') ?? '[]';
+      final List<dynamic> bannerImagesList = json.decode(bannerImagesJson);
+      
+      setState(() {
+        _bannerImages = bannerImagesList.cast<String>();
+        _isLoadingBanners = false;
+      });
+      // Restart auto swipe with new banner count
+      _resetAutoSwipe();
+    } catch (e) {
+      debugPrint('Error loading banner images: $e');
+      setState(() {
+        _isLoadingBanners = false;
+      });
+    }
   }
 
   @override
@@ -91,8 +118,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _startAutoSwipe() {
     _autoSwipeTimer = Timer.periodic(Duration(seconds: 3), (timer) {
-      if (_pageController.hasClients && mounted) {
-        int nextPage = (_currentPage + 1) % 2; // 2 pages in carousel
+      if (_pageController.hasClients && mounted && !_isLoadingBanners) {
+        int totalPages = _bannerImages.isNotEmpty ? _bannerImages.length : 2; // Fallback to 2 default pages
+        int nextPage = (_currentPage + 1) % totalPages;
         _pageController.animateToPage(
           nextPage,
           duration: Duration(milliseconds: 500),
@@ -128,7 +156,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   // Header section
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
                     child: Row(
                       children: [
                         // Menu icon
@@ -143,11 +171,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           },
                           child: Icon(
                             Icons.menu,
-                            size: 28,
+                            size: MediaQuery.of(context).size.width * 0.07,
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.04),
                         // Location dropdown
                         Expanded(
                           child: GestureDetector(
@@ -179,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.04),
                         // Notification icon
                         GestureDetector(
                           onTap: () {
@@ -191,7 +219,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             );
                           },
                           child: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
                             decoration: BoxDecoration(
                               color: Colors.black87,
                               borderRadius: BorderRadius.circular(8),
@@ -199,7 +227,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             child: Icon(
                               Icons.notifications_outlined,
                               color: Colors.white,
-                              size: 24,
+                              size: MediaQuery.of(context).size.width * 0.06,
                             ),
                           ),
                         ),
@@ -209,17 +237,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   
                   // Manager cards section
                   Container(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 25),
-                    child: Row(
-                      children: [
-                        _buildManagerCard('Cadre\nManager', 'assets/icons/cadre_manager.png'),
-                        const SizedBox(width: 12),
-                        _buildManagerCard('Voter\nManager', 'assets/icons/voter_manager.png'),
-                        const SizedBox(width: 12),
-                        _buildManagerCard('Family\nManager', 'assets/icons/family_manager.png'),
-                        const SizedBox(width: 12),
-                        _buildManagerCard('Survey\nManager', 'assets/icons/survey_manager.png'),
-                      ],
+                    padding: EdgeInsets.fromLTRB(
+                      MediaQuery.of(context).size.width * 0.04,
+                      0,
+                      MediaQuery.of(context).size.width * 0.04,
+                      MediaQuery.of(context).size.height * 0.03,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          _buildManagerCard(AppLocalizations.of(context)?.cadreManager ?? 'Cadre\nManager', 'assets/icons/cadre_manager.png', 'cadre'),
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                          _buildManagerCard(AppLocalizations.of(context)?.voterManager ?? 'Voter\nManager', 'assets/icons/voter_manager.png', 'voter'),
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                          _buildManagerCard(AppLocalizations.of(context)?.familyManager ?? 'Family\nManager', 'assets/icons/family_manager.png', 'family'),
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                          _buildManagerCard(AppLocalizations.of(context)?.surveyManager ?? 'Survey\nManager', 'assets/icons/survey_manager.png', 'survey'),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -233,11 +268,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     
-                    const SizedBox(height: 20),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.025),
                     
                     // Search section - outside blue background
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.04,
+                      ),
                       child: Row(
                         children: [
                           Expanded(
@@ -256,7 +293,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: TextField(
                                 controller: _searchController,
                                 decoration: InputDecoration(
-                                  hintText: 'Voter Id or Voter Name',
+                                  hintText: AppLocalizations.of(context)?.searchPlaceholder ?? 'Voter Id or Voter Name',
                                   hintStyle: TextStyle(
                                     color: Colors.grey[400],
                                     fontSize: 16,
@@ -267,14 +304,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     size: 24,
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: MediaQuery.of(context).size.width * 0.05,
+                                    vertical: MediaQuery.of(context).size.height * 0.018,
+                                  ),
                                 ),
                                 onTap: () => _showAdvancedSearch(),
                                 readOnly: true,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                                        SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                           GestureDetector(
                             onTap: _showAdvancedSearch,
                             child: Container(
@@ -301,265 +341,348 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     
-                    const SizedBox(height: 20),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.025),
                     
 
                     
                     // Category grid section
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: GridView.count(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 0.85,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.04,
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          double screenWidth = constraints.maxWidth;
+                          int crossAxisCount = screenWidth > 600 ? 6 : 4;
+                          double spacing = screenWidth * 0.02;
+                          double aspectRatio = screenWidth > 600 ? 0.9 : 0.85;
+                          
+                          return GridView.count(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: spacing,
+                            mainAxisSpacing: spacing,
+                            childAspectRatio: aspectRatio,
                         children: [
-                          _buildCategoryItem('Cadre', 'assets/icons/cadre.png', Color(0xFF2196F3)),
-                          _buildCategoryItem('Part', 'assets/icons/part.png', Color(0xFFF44336)),
-                          _buildCategoryItem('Voter', 'assets/icons/voter.png', Color(0xFFFF9800)),
-                          _buildCategoryItem('New', 'assets/icons/New.png', Color(0xFF4CAF50)),
-                          _buildCategoryItem('Transgender', 'assets/icons/transegender.png', Color(0xFFFFEB3B)),
-                          _buildCategoryItem('Fatherless', 'assets/icons/fatherless.png', Color(0xFF9C27B0)),
-                          _buildCategoryItem('Guardian', 'assets/icons/guardian.png', Color(0xFF00BCD4)),
-                          _buildCategoryItem('Overseas', 'assets/icons/overseas.png', Color(0xFF607D8B)),
-                          _buildCategoryItem('Birthday', 'assets/icons/birthday.png', Color(0xFFE91E63)),
-                          _buildCategoryItem('Star', 'assets/icons/star.png', Color(0xFFFF5722)),
-                          _buildCategoryItem('Mobile', 'assets/icons/Mobile.png', Color(0xFF3F51B5)),
-                          _buildCategoryItem('80 Above', 'assets/icons/80 Above.png', Color(0xFF795548)),
-                        ],
+                          _buildCategoryItem(AppLocalizations.of(context)?.cadre ?? 'Cadre', 'assets/icons/cadre.png', Color(0xFF2196F3), 'cadre'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.part ?? 'Part', 'assets/icons/part.png', Color(0xFFF44336), 'part'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.voter ?? 'Voter', 'assets/icons/voter.png', Color(0xFFFF9800), 'voter'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.newVoters ?? 'New', 'assets/icons/New.png', Color(0xFF4CAF50), 'new'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.transgender ?? 'Transgender', 'assets/icons/transegender.png', Color(0xFFFFEB3B), 'transgender'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.fatherless ?? 'Fatherless', 'assets/icons/fatherless.png', Color(0xFF9C27B0), 'fatherless'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.guardian ?? 'Guardian', 'assets/icons/guardian.png', Color(0xFF00BCD4), 'guardian'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.overseas ?? 'Overseas', 'assets/icons/overseas.png', Color(0xFF607D8B), 'overseas'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.birthday ?? 'Birthday', 'assets/icons/birthday.png', Color(0xFFE91E63), 'birthday'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.star ?? 'Star', 'assets/icons/star.png', Color(0xFFFF5722), 'star'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.mobile ?? 'Mobile', 'assets/icons/Mobile.png', Color(0xFF3F51B5), 'mobile'),
+                          _buildCategoryItem(AppLocalizations.of(context)?.above80 ?? '80 Above', 'assets/icons/80 Above.png', Color(0xFF795548), 'above80'),
+                            ],
+                          );
+                        },
                       ),
                     ),
                     
-                    const SizedBox(height: 20),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.025),
                     
                     // Image carousel section
                     SizedBox(
-                      height: 200,
-                      child: PageView(
-                        controller: _pageController,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentPage = index;
-                          });
-                          // Reset auto-swipe timer when user manually swipes
-                          _resetAutoSwipe();
-                        },
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xFF1976D2),
-                                  Color(0xFF42A5F5),
-                                ],
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: _isLoadingBanners
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF1976D2),
                               ),
+                            )
+                          : PageView(
+                              controller: _pageController,
+                              onPageChanged: (index) {
+                                setState(() {
+                                  _currentPage = index;
+                                });
+                                // Reset auto-swipe timer when user manually swipes
+                                _resetAutoSwipe();
+                              },
+                              children: _bannerImages.isNotEmpty
+                                  ? _bannerImages.map((imagePath) {
+                                      return Container(
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: MediaQuery.of(context).size.width * 0.04,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(alpha: 0.1),
+                                              blurRadius: 8,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Image.file(
+                                            File(imagePath),
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Color(0xFFE57373),
+                                                      Color(0xFFEF5350),
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.broken_image,
+                                                        size: MediaQuery.of(context).size.width * 0.1,
+                                                        color: Colors.white,
+                                                      ),
+                                                      SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                                      Text(
+                                                        'Image not found',
+                                                        style: TextStyle(
+                                                          fontSize: MediaQuery.of(context).size.width * 0.04,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    }).toList()
+                                  : [
+                                      // Default banners when no images are uploaded
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: MediaQuery.of(context).size.width * 0.04,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                              Color(0xFF1976D2),
+                                              Color(0xFF42A5F5),
+                                            ],
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.campaign,
+                                                size: MediaQuery.of(context).size.width * 0.12,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                              Text(
+                                                AppLocalizations.of(context)?.politicalMeeting ?? 'Political Meeting',
+                                                style: TextStyle(
+                                                  fontSize: MediaQuery.of(context).size.width * 0.045,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: MediaQuery.of(context).size.width * 0.04,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                              Color(0xFF4CAF50),
+                                              Color(0xFF66BB6A),
+                                            ],
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.people,
+                                                size: MediaQuery.of(context).size.width * 0.12,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                              Text(
+                                                'Community Event',
+                                                style: TextStyle(
+                                                  fontSize: MediaQuery.of(context).size.width * 0.045,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                             ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.campaign,
-                                    size: 48,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Political Meeting',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xFF4CAF50),
-                                  Color(0xFF66BB6A),
-                                ],
-                              ),
-                            ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.people,
-                                    size: 48,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Community Event',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                     
                     const SizedBox(height: 12),
                     
                     // Page indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _currentPage == 0 ? Color(0xFF1976D2) : Colors.grey[300],
+                    if (!_isLoadingBanners)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          _bannerImages.isNotEmpty ? _bannerImages.length : 2,
+                          (index) => Container(
+                            margin: EdgeInsets.symmetric(horizontal: 4),
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentPage == index ? Color(0xFF1976D2) : Colors.grey[300],
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _currentPage == 1 ? Color(0xFF1976D2) : Colors.grey[300],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
                     
-                    const SizedBox(height: 20),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.025),
                     
                     // Cadre Overview section
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.04,
+                        vertical: MediaQuery.of(context).size.height * 0.01,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Cadre Overview',
+                            AppLocalizations.of(context)?.cadreOverview ?? 'Cadre Overview',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: MediaQuery.of(context).size.width * 0.055,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Large Total Cadres card on the left
-                              Expanded(
-                                flex: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => MyCadreScreen()),
-                                    );
-                                  },
-                                  child: _buildLargeStatCard(
-                                    'Total\nCadres',
-                                    '0',
-                                    Color(0xFF1976D2),
-                                    Icons.directions_walk,
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.018),
+                          IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Large Total Cadres card on the left
+                                Expanded(
+                                  flex: 1,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MyCadreScreen()),
+                                      );
+                                    },
+                                    child: _buildTotalCadresCard(
+                                      AppLocalizations.of(context)?.totalCadres ?? 'Total\nCadres',
+                                      '0',
+                                      Color(0xFF1976D2),
+                                      Icons.directions_walk,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              // 2x2 grid of smaller cards on the right
-                              Expanded(
-                                flex: 3,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => MyCadreScreen()),
-                                              );
-                                            },
+                                SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                                // 2x2 grid of smaller cards on the right
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder: (context) => MyCadreScreen()),
+                                                );
+                                              },
+                                              child: _buildStatCard(
+                                                AppLocalizations.of(context)?.cadreActive ?? 'Cadre\nActive',
+                                                '0',
+                                                Color(0xFF4CAF50),
+                                                null,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder: (context) => MyCadreScreen()),
+                                                );
+                                              },
+                                              child: _buildStatCard(
+                                                AppLocalizations.of(context)?.cadreInActive ?? 'Cadre\nInActive',
+                                                '0',
+                                                Color(0xFFF44336),
+                                                null,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                      Row(
+                                        children: [
+                                          Expanded(
                                             child: _buildStatCard(
-                                              'Cadre\nActive',
+                                              AppLocalizations.of(context)?.loggedIn ?? 'Logged\nIn',
                                               '0',
                                               Color(0xFF4CAF50),
                                               null,
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => MyCadreScreen()),
-                                              );
-                                            },
+                                          SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+                                          Expanded(
                                             child: _buildStatCard(
-                                              'Cadre\nInActive',
+                                              AppLocalizations.of(context)?.notLogged ?? 'Not\nLogged',
                                               '0',
                                               Color(0xFFF44336),
                                               null,
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: _buildStatCard(
-                                            'Logged\nIn',
-                                            '0',
-                                            Color(0xFF4CAF50),
-                                            null,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: _buildStatCard(
-                                            'Not\nLogged',
-                                            '0',
-                                            Color(0xFFF44336),
-                                            null,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
                     
-                    const SizedBox(height: 20),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.025),
                   ],
                 ),
               ),
@@ -573,42 +696,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildManagerCard(String title, String iconPath) {
+  Widget _buildManagerCard(String title, String iconPath, String managerId) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          if (title == 'Cadre\nManager') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MyCadreScreen()),
-            );
-          } else if (title == 'Voter\nManager') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PartNumbersScreen()),
-            );
-          } else if (title == 'Family\nManager') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FamilyManagerScreen()),
-            );
-          } else if (title == 'Survey\nManager') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SurveyScreen()),
-            );
-          } else {
-            // Show coming soon message for other managers
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('$title - Coming Soon!'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+          switch (managerId) {
+            case 'cadre':
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyCadreScreen()),
+              );
+              break;
+            case 'voter':
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PartNumbersScreen()),
+              );
+              break;
+            case 'family':
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FamilyManagerScreen()),
+              );
+              break;
+            case 'survey':
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SurveyScreen()),
+              );
+              break;
+            default:
+              // Show coming soon message for other managers
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('$title - Coming Soon!'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
           }
         },
         child: Container(
-          padding: EdgeInsets.all(12),
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.1,
+            maxHeight: MediaQuery.of(context).size.height * 0.12,
+          ),
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -620,22 +752,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Image.asset(
                 iconPath,
-                width: 32,
-                height: 32,
+                width: MediaQuery.of(context).size.width * 0.08,
+                height: MediaQuery.of(context).size.width * 0.08,
                 color: Colors.black,
               ),
-              const SizedBox(height: 6),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                  height: 1.2,
+              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+              Flexible(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.028,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                    height: 1.2,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -644,78 +778,91 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildCategoryItem(String title, String iconPath, Color color) {
+  Widget _buildCategoryItem(String title, String iconPath, Color color, String categoryId) {
     return GestureDetector(
       onTap: () {
-        // Handle navigation for different categories
-        if (title == 'Cadre') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MyCadreScreen()),
-          );
-        } else if (title == 'Voter') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => VoterPartNumbersScreen()),
-          );
-        } else if (title == 'New') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewVotersScreen()),
-          );
-        } else if (title == 'Part') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PartMapScreen()),
-          );
-        } else if (title == 'Transgender') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TransgenderScreen()),
-          );
-        } else if (title == 'Fatherless') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => FatherlessScreen()),
-          );
-        } else if (title == 'Guardian') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GuardianScreen()),
-          );
-        } else if (title == 'Birthday') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => BirthdayScreen()),
-          );
-        } else if (title == 'Overseas') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => OverseasScreen()),
-          );
-        } else if (title == 'Star') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => StarScreen()),
-          );
-        } else if (title == 'Mobile') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MobileScreen()),
-          );
-        } else if (title == '80 Above') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Above80Screen()),
-          );
-        } else {
-          // Show coming soon message for other categories
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$title - Coming Soon!'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+        // Handle navigation for different categories using ID
+        switch (categoryId) {
+          case 'cadre':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyCadreScreen()),
+            );
+            break;
+          case 'voter':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => VoterPartNumbersScreen()),
+            );
+            break;
+          case 'new':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewVotersScreen()),
+            );
+            break;
+          case 'part':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PartMapScreen()),
+            );
+            break;
+          case 'transgender':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TransgenderScreen()),
+            );
+            break;
+          case 'fatherless':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FatherlessScreen()),
+            );
+            break;
+          case 'guardian':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GuardianScreen()),
+            );
+            break;
+          case 'birthday':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BirthdayScreen()),
+            );
+            break;
+          case 'overseas':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => OverseasScreen()),
+            );
+            break;
+          case 'star':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => StarScreen()),
+            );
+            break;
+          case 'mobile':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MobileScreen()),
+            );
+            break;
+          case 'above80':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Above80Screen()),
+            );
+            break;
+          default:
+            // Show coming soon message for other categories
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('$title - Coming Soon!'),
+                duration: Duration(seconds: 2),
+              ),
+            );
         }
       },
       child: Column(
@@ -733,14 +880,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
               );
             },
           ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
+          const SizedBox(height: 6),
+          Flexible(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+                height: 1.1,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -751,10 +903,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildStatCard(String title, String value, Color color, IconData? icon) {
     return Container(
       constraints: BoxConstraints(
-        minHeight: 100,
-        maxHeight: 130,
+        minHeight: MediaQuery.of(context).size.height * 0.09,
+        maxHeight: MediaQuery.of(context).size.height * 0.11,
       ),
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -770,32 +922,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Remove icon space for these cards since they don't have icons
           if (icon != null)
             Icon(
               icon,
-              size: 24,
+              size: MediaQuery.of(context).size.width * 0.05,
               color: color,
             )
           else
-            SizedBox(height: 24), // Consistent spacing for cards without icons
+            SizedBox(height: MediaQuery.of(context).size.height * 0.005), // Minimal spacing
           
           Flexible(
             child: Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: MediaQuery.of(context).size.width * 0.028,
                 color: Colors.black54,
                 fontWeight: FontWeight.w500,
+                height: 1.1,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
           
+          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
+          
           Container(
-            width: 24,
-            height: 24,
+            width: MediaQuery.of(context).size.width * 0.07,
+            height: MediaQuery.of(context).size.width * 0.07,
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(4),
@@ -804,7 +960,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Text(
                 value,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: MediaQuery.of(context).size.width * 0.035,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -816,10 +972,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildLargeStatCard(String title, String value, Color color, IconData? icon) {
+  Widget _buildTotalCadresCard(String title, String value, Color color, IconData? icon) {
     return Container(
-      height: 220, // Taller to match the 2x2 grid height
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -837,24 +992,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
           if (icon != null) ...[
             Icon(
               icon,
-              size: 48,
+              size: MediaQuery.of(context).size.width * 0.08,
               color: color,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
           ],
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: MediaQuery.of(context).size.width * 0.035,
               color: Colors.black54,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.015),
           Container(
-            width: 48,
-            height: 48,
+            width: MediaQuery.of(context).size.width * 0.12,
+            height: MediaQuery.of(context).size.width * 0.12,
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(8),
@@ -863,7 +1018,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Text(
                 value,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: MediaQuery.of(context).size.width * 0.05,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -874,7 +1029,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
 
   void _showElectionModal() {
     String tempSelectedElection = selectedElection;
@@ -900,14 +1054,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Column(
               children: [
                 Text(
-                  'Set Default Election',
+                  AppLocalizations.of(context)?.setDefaultElection ?? 'Set Default Election',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -948,7 +1102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -969,7 +1123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       elevation: 0,
                     ),
                     child: Text(
-                      'UPDATE',
+                      AppLocalizations.of(context)?.update ?? 'UPDATE',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -993,7 +1147,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     child: Text(
-                      'CLOSE',
+                      AppLocalizations.of(context)?.close ?? 'CLOSE',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -1036,45 +1190,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Fixed header
               Row(
                 children: [
                   Text(
                     'Advance Search',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: MediaQuery.of(context).size.width * 0.045,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Spacer(),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.close, size: 24),
+                    child: Icon(
+                      Icons.close, 
+                      size: MediaQuery.of(context).size.width * 0.06,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              _buildSearchField('Mobile No', _mobileController),
-              const SizedBox(height: 16),
-              _buildSearchField('PartNo', _partNoController),
-              const SizedBox(height: 16),
-              _buildSearchField('Serial No', _serialNoController),
-              const SizedBox(height: 16),
-              _buildSearchField('EPIC Id', _epicIdController),
-              const SizedBox(height: 16),
-              _buildSearchField('Voter First Name', _voterFirstNameController),
-              const SizedBox(height: 16),
-              _buildSearchField('Voter Last Name', _voterLastNameController),
-              const SizedBox(height: 16),
-              _buildSearchField('Relation First Name', _relationFirstNameController),
-              const SizedBox(height: 16),
-              _buildSearchField('Relation Last Name', _relationLastNameController),
-              const SizedBox(height: 16),
-              _buildSearchField('Age', _ageController),
-              const SizedBox(height: 24),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+              
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildSearchField('Mobile No', _mobileController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('PartNo', _partNoController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('Serial No', _serialNoController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('EPIC Id', _epicIdController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('Voter First Name', _voterFirstNameController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('Voter Last Name', _voterLastNameController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('Relation First Name', _relationFirstNameController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('Relation Last Name', _relationLastNameController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                      _buildSearchField('Age', _ageController),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                    ],
+                  ),
+                ),
+              ),
+              
+              // Fixed bottom buttons
               Row(
                 children: [
                   Expanded(
@@ -1089,11 +1259,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height * 0.018,
+                        ),
                       ),
                       child: Text('Cancel'),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.04),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -1108,8 +1281,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height * 0.018,
+                        ),
                       ),
-                      child: Text('Search'),
+                      child: Text(AppLocalizations.of(context)?.search ?? 'Search'),
                     ),
                   ),
                 ],
@@ -1138,7 +1314,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Color(0xFF1976D2)),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.04,
+          vertical: MediaQuery.of(context).size.height * 0.015,
+        ),
       ),
     );
   }

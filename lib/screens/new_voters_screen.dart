@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/unified_voter_filter.dart';
 
 class NewVotersScreen extends StatefulWidget {
@@ -90,7 +91,7 @@ class _NewVotersScreenState extends State<NewVotersScreen> {
                   Expanded(
                     child: Center(
                       child: Text(
-                        'New Voters',
+                        AppLocalizations.of(context)?.newVoters ?? 'New Voters',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

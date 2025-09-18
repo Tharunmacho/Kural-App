@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 import 'dart:io'; // For InternetAddress
 import 'dart:async'; // For TimeoutException
 
@@ -188,37 +189,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
           debugPrint('User already authenticated: ${FirebaseAuth.instance.currentUser?.uid}');
         }
 
-        // Always try to update the existing document first
-        final existingDocs = await FirebaseFirestore.instance
-            .collection('my_profile')
-            .limit(1)
-            .get()
-            .timeout(const Duration(seconds: 10));
-        
-        if (existingDocs.docs.isNotEmpty) {
-          // Update existing document
-          final docId = existingDocs.docs.first.id;
-          debugPrint('Updating existing document with ID: $docId');
+        if (_userDocumentId != null) {
+          // Update existing document using stored document ID
+          debugPrint('Updating existing document with ID: $_userDocumentId');
           await FirebaseFirestore.instance
               .collection('my_profile')
-              .doc(docId)
+              .doc(_userDocumentId)
               .set(updatedData, SetOptions(merge: true))
               .timeout(const Duration(seconds: 15));
           debugPrint('Document updated successfully');
         } else {
-          // Create new document
-          debugPrint('Creating new document in my profile collection');
+          // Create new document and store its ID
+          debugPrint('Creating new document in my_profile collection');
           final docRef = await FirebaseFirestore.instance
               .collection('my_profile')
               .add(updatedData)
               .timeout(const Duration(seconds: 15));
+          _userDocumentId = docRef.id;
           debugPrint('New document created with ID: ${docRef.id}');
         }
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile updated successfully!'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)?.profileUpdatedSuccessfully ?? 'Profile updated successfully!'),
               backgroundColor: Colors.green,
             ),
           );
@@ -304,18 +298,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       child: Column(
                         children: [
-                    _buildFormField('First Name', _firstNameController, true),
+                    _buildFormField(AppLocalizations.of(context)?.firstName ?? 'First Name', _firstNameController, true),
                     const SizedBox(height: 20),
-                    _buildFormField('Last Name', _lastNameController, true),
+                    _buildFormField(AppLocalizations.of(context)?.lastName ?? 'Last Name', _lastNameController, true),
                     const SizedBox(height: 20),
-                    _buildFormField('Email', _emailController, true),
+                    _buildFormField(AppLocalizations.of(context)?.email ?? 'Email', _emailController, true),
                     const SizedBox(height: 20),
-                    _buildFormField('Mobile Number', _mobileController, false),
+                    _buildFormField(AppLocalizations.of(context)?.mobileNumber ?? 'Mobile Number', _mobileController, false),
                     const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Mobile number cannot be changed',
+                        AppLocalizations.of(context)?.mobileNumberCannotBeChanged ?? 'Mobile number cannot be changed',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -323,7 +317,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    _buildFormField('Role', _roleController, false),
+                    _buildFormField(AppLocalizations.of(context)?.role ?? 'Role', _roleController, false),
                     const SizedBox(height: 40),
                         // Save Changes button
                         SizedBox(
@@ -348,8 +342,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     ),
                                   )
-                                : const Text(
-                                    'Save Changes',
+                                : Text(
+                                    AppLocalizations.of(context)?.save ?? 'Save Changes',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

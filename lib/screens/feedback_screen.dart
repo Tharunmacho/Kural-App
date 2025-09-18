@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -95,7 +96,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 // Title
                 Expanded(
                   child: Text(
-                    'Feedback',
+                    AppLocalizations.of(context)?.feedback ?? 'Feedback',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 22,

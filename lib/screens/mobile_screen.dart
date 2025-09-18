@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'voter_info_screen.dart';
 import '../widgets/unified_voter_filter.dart';
 
@@ -128,7 +129,7 @@ class _MobileScreenState extends State<MobileScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Mobile',
+          AppLocalizations.of(context)?.mobile ?? 'Mobile',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,

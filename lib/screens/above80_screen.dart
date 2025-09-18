@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'voter_info_screen.dart';
 
 class Above80Voter {
@@ -127,7 +128,7 @@ class _Above80ScreenState extends State<Above80Screen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          '80 Above',
+          AppLocalizations.of(context)?.above80 ?? '80 Above',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -182,7 +183,7 @@ class _Above80ScreenState extends State<Above80Screen> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Voter Id or Voter Name',
+                  hintText: AppLocalizations.of(context)?.searchPlaceholder ?? 'Voter Id or Voter Name',
                   hintStyle: TextStyle(color: Colors.grey[500]),
                   prefixIcon: Icon(Icons.search, color: Colors.blue[600]),
                   border: InputBorder.none,
@@ -629,7 +630,7 @@ class _Above80ScreenState extends State<Above80Screen> {
               Row(
                 children: [
                   Text(
-                    'Advance Search',
+                    AppLocalizations.of(context)?.advanceSearch ?? 'Advance Search',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -643,19 +644,19 @@ class _Above80ScreenState extends State<Above80Screen> {
                 ],
               ),
               const SizedBox(height: 24),
-              _buildSearchField('Mobile No', _mobileController),
+              _buildSearchField(AppLocalizations.of(context)?.mobileNo ?? 'Mobile No', _mobileController),
               const SizedBox(height: 16),
-              _buildSearchField('PartNo', _partNoController),
+              _buildSearchField(AppLocalizations.of(context)?.partNo ?? 'PartNo', _partNoController),
               const SizedBox(height: 16),
-              _buildSearchField('Serial No', _serialNoController),
+              _buildSearchField(AppLocalizations.of(context)?.serialNo ?? 'Serial No', _serialNoController),
               const SizedBox(height: 16),
-              _buildSearchField('EPIC Id', _epicIdController),
+              _buildSearchField(AppLocalizations.of(context)?.epicId ?? 'EPIC Id', _epicIdController),
               const SizedBox(height: 16),
-              _buildSearchField('Voter First Name', _voterFirstNameController),
+              _buildSearchField(AppLocalizations.of(context)?.voterFirstName ?? 'Voter First Name', _voterFirstNameController),
               const SizedBox(height: 16),
-              _buildSearchField('Voter Last Name', _voterLastNameController),
+              _buildSearchField(AppLocalizations.of(context)?.voterLastName ?? 'Voter Last Name', _voterLastNameController),
               const SizedBox(height: 16),
-              _buildSearchField('Relation First Name', _relationFirstNameController),
+              _buildSearchField(AppLocalizations.of(context)?.relationFirstName ?? 'Relation First Name', _relationFirstNameController),
               const SizedBox(height: 24),
               Row(
                 children: [
@@ -672,7 +673,7 @@ class _Above80ScreenState extends State<Above80Screen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text('Clear'),
+                      child: Text(AppLocalizations.of(context)?.clear ?? 'Clear'),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -691,7 +692,7 @@ class _Above80ScreenState extends State<Above80Screen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text('Search'),
+                      child: Text(AppLocalizations.of(context)?.search ?? 'Search'),
                     ),
                   ),
                 ],

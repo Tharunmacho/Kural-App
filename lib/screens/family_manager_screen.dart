@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'family_details_screen.dart';
 import 'no_family_screen.dart';
 
@@ -55,7 +56,7 @@ class _FamilyManagerScreenState extends State<FamilyManagerScreen> {
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Part-1 Family',
+                        AppLocalizations.of(context)?.familyManager ?? 'Part-1 Family',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -389,3 +390,4 @@ class _FamilyManagerScreenState extends State<FamilyManagerScreen> {
     );
   }
 }
+

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'app_banner_screen.dart';
 import 'history_screen.dart';
 import 'voter_category_screen.dart';
@@ -54,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // Title
                 Expanded(
                   child: Text(
-                    'Settings',
+                    AppLocalizations.of(context)?.settings ?? 'Settings',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 22,
@@ -78,10 +79,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
                 children: [
-                  _buildSettingCard('Set Election', Icons.touch_app, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.setElection ?? 'Set Election', Icons.touch_app, () {
                     _showSetElectionModal();
                   }),
-                  _buildSettingCard('App Banner', Icons.desktop_windows, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.appBanner ?? 'App Banner', Icons.desktop_windows, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -89,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('History', Icons.refresh, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.history ?? 'History', Icons.refresh, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -97,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Category', Icons.dashboard_customize, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.category ?? 'Category', Icons.dashboard_customize, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -105,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Voter Slip', Icons.receipt_long, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.voterSlip ?? 'Voter Slip', Icons.receipt_long, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -113,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Party', Icons.flag, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.party ?? 'Party', Icons.flag, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -121,7 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Religion', Icons.church, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.religion ?? 'Religion', Icons.church, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -129,7 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Caste Category', Icons.pie_chart, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.casteCategory ?? 'Caste Category', Icons.pie_chart, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -137,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Caste', Icons.pie_chart_outline, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.caste ?? 'Caste', Icons.pie_chart_outline, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -145,7 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Sub-Caste', Icons.people, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.subCaste ?? 'Sub-Caste', Icons.people, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -153,7 +154,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Language', Icons.language, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.language ?? 'Language', Icons.language, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -161,7 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Schemes', Icons.volunteer_activism, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.schemes ?? 'Schemes', Icons.volunteer_activism, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -169,7 +170,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   }),
-                  _buildSettingCard('Feedback', Icons.feedback, () {
+                  _buildSettingCard(AppLocalizations.of(context)?.feedback ?? 'Feedback', Icons.feedback, () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(

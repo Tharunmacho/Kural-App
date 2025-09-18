@@ -13,7 +13,12 @@ class ElectionsScreen extends StatelessWidget {
           // Header with light blue background
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(top: 40, bottom: 20, left: 20, right: 20),
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              bottom: MediaQuery.of(context).size.height * 0.025,
+              left: MediaQuery.of(context).size.width * 0.05,
+              right: MediaQuery.of(context).size.width * 0.05,
+            ),
             decoration: BoxDecoration(
               color: Color(0xFFE3F2FD),
               borderRadius: BorderRadius.only(
@@ -28,24 +33,24 @@ class ElectionsScreen extends StatelessWidget {
                   onTap: () => Navigator.pop(context),
                   child: Icon(
                     Icons.arrow_back,
-                    size: 24,
+                    size: MediaQuery.of(context).size.width * 0.06,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.04),
                 // Title
                 Expanded(
                   child: Text(
                     'Your Elections',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: MediaQuery.of(context).size.width * 0.055,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const SizedBox(width: 40), // Balance the back button
+                SizedBox(width: MediaQuery.of(context).size.width * 0.1), // Balance the back button
               ],
             ),
           ),
@@ -53,13 +58,16 @@ class ElectionsScreen extends StatelessWidget {
           // Main content area with candidate cards
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.05,
+                vertical: MediaQuery.of(context).size.height * 0.02,
+              ),
               child: GridView.builder(
                   physics: BouncingScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.8,
+                    mainAxisSpacing: MediaQuery.of(context).size.height * 0.02,
+                    childAspectRatio: MediaQuery.of(context).size.width > 400 ? 0.9 : 0.8,
                   ),
                   itemCount: 1, // Show only 1 candidate card
                   itemBuilder: (context, index) {

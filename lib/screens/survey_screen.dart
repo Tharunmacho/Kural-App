@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class SurveyScreen extends StatefulWidget {
   const SurveyScreen({super.key});
@@ -54,7 +55,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Survey',
+                        AppLocalizations.of(context)?.survey ?? 'Survey',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -378,3 +379,4 @@ class _SurveyScreenState extends State<SurveyScreen> {
     );
   }
 }
+

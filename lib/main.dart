@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'providers/language_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +21,7 @@ Future<void> main() async {
 
   // App verification is enabled for real OTP functionality
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -25,20 +29,37 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Thedal Election Analytics Manager',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1A237E),
-          primary: const Color(0xFF1A237E),
-        ),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => LanguageProvider()..initialize(),
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, child) {
+          debugPrint('Consumer builder called with locale: ${languageProvider.currentLocale}');
+          return MaterialApp(
+            title: 'Thedal Election Analytics Manager',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF1A237E),
+                primary: const Color(0xFF1A237E),
+              ),
+              useMaterial3: true,
+            ),
+            // Localization configuration
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: LanguageProvider.getSupportedLocales(),
+            locale: languageProvider.currentLocale,
+            home: const RootRouter(),
+            routes: {
+              '/login': (context) => const LoginScreen(),
+            },
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
-      home: const RootRouter(),
-      routes: {
-        '/login': (context) => const LoginScreen(),
-      },
-      debugShowCheckedModeBanner: false,
     );
   }
 }

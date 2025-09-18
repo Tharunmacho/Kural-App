@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class VoterCategoryScreen extends StatefulWidget {
   const VoterCategoryScreen({super.key});
@@ -161,7 +162,7 @@ class _VoterCategoryScreenState extends State<VoterCategoryScreen> {
                 // Title
                 Expanded(
                   child: Text(
-                    'Voter Category',
+                    AppLocalizations.of(context)?.voterCategory ?? 'Voter Category',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 22,
@@ -304,3 +305,4 @@ class _VoterCategoryScreenState extends State<VoterCategoryScreen> {
     );
   }
 }
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import 'voter_info_screen.dart';
 
 class StarVoter {
@@ -121,7 +122,7 @@ class _StarScreenState extends State<StarScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Star',
+          AppLocalizations.of(context)?.star ?? 'Star',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
