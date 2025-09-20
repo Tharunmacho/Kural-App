@@ -941,7 +941,7 @@ class _ViewElectionScreenState extends State<ViewElectionScreen> {
         ),
       ),
       child: DropdownButtonFormField<String>(
-        initialValue: value,
+        value: value,
         items: options.map((String option) {
           return DropdownMenuItem<String>(
             value: option,

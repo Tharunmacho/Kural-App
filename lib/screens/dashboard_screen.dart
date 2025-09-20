@@ -22,6 +22,9 @@ import 'part_map_screen.dart';
 import 'voter_part_numbers_screen.dart';
 import 'drawer_screen.dart';
 import '../widgets/bottom_navigation_bar.dart';
+import '../data/voter_search_service.dart';
+import '../data/voter.dart';
+import 'voter_detail_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -71,10 +74,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final TextEditingController _relationFirstNameController = TextEditingController();
   final TextEditingController _relationLastNameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  
+  // Voter search service
+  late final VoterSearchService _voterSearchService;
 
   @override
   void initState() {
     super.initState();
+    _voterSearchService = VoterSearchService(collectionPath: 'voters_details');
     _loadBannerImages();
     _startAutoSwipe();
   }
@@ -1069,8 +1076,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
-                  child: DropdownButtonFormField<String>(
-                    initialValue: tempSelectedElection,
+                   child: DropdownButtonFormField<String>(
+                     value: tempSelectedElection,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -1267,14 +1274,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   SizedBox(width: MediaQuery.of(context).size.width * 0.04),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Search functionality implemented!')),
-                        );
-                      },
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await _performSearch();
+                        },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF1976D2),
                         foregroundColor: Colors.white,
@@ -1317,6 +1321,422 @@ class _DashboardScreenState extends State<DashboardScreen> {
         contentPadding: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width * 0.04,
           vertical: MediaQuery.of(context).size.height * 0.015,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _performSearch() async {
+    try {
+      // Close the search modal first
+      Navigator.pop(context);
+      
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF1976D2),
+          ),
+        ),
+      );
+      
+      // Collect search parameters
+      final searchParams = {
+        'mobileNo': _mobileController.text.trim().isNotEmpty ? _mobileController.text.trim() : null,
+        'partNo': _partNoController.text.trim().isNotEmpty ? _partNoController.text.trim() : null,
+        'serialNo': _serialNoController.text.trim().isNotEmpty ? _serialNoController.text.trim() : null,
+        'epicId': _epicIdController.text.trim().isNotEmpty ? _epicIdController.text.trim() : null,
+        'voterFirstName': _voterFirstNameController.text.trim().isNotEmpty ? _voterFirstNameController.text.trim() : null,
+        'voterLastName': _voterLastNameController.text.trim().isNotEmpty ? _voterLastNameController.text.trim() : null,
+        'relationFirstName': _relationFirstNameController.text.trim().isNotEmpty ? _relationFirstNameController.text.trim() : null,
+        'relationLastName': _relationLastNameController.text.trim().isNotEmpty ? _relationLastNameController.text.trim() : null,
+        'age': _ageController.text.trim().isNotEmpty ? _ageController.text.trim() : null,
+      };
+      
+      // Remove null values
+      searchParams.removeWhere((key, value) => value == null);
+      
+      if (searchParams.isEmpty) {
+        // Close loading dialog
+        if (mounted) Navigator.pop(context);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please enter at least one search criteria'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+      
+      // Perform search
+      List<Voter> voters = await _voterSearchService.search(
+        mobileNo: searchParams['mobileNo'],
+        partNo: searchParams['partNo'],
+        serialNo: searchParams['serialNo'],
+        epicId: searchParams['epicId'],
+        voterFirstName: searchParams['voterFirstName'],
+        voterLastName: searchParams['voterLastName'],
+        relationFirstName: searchParams['relationFirstName'],
+        relationLastName: searchParams['relationLastName'],
+        age: searchParams['age'],
+      );
+      
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+      
+      // Show results
+      if (mounted) {
+        _showSearchResults(voters);
+      }
+      
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Search failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showSearchResults(List<Voter> voters) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Color(0xFF1976D2),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'Search Results',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    'Showing 1-${voters.length} of ${voters.length} Voter${voters.length != 1 ? 's' : ''}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Results
+            Expanded(
+              child: voters.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No matching voter found',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Try different search criteria',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: EdgeInsets.all(16),
+                      itemCount: voters.length,
+                      itemBuilder: (context, index) {
+                        final voter = voters[index];
+                        return _buildVoterCard(voter);
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVoterCard(Voter voter) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print('Voter card tapped! Navigating to detail screen...');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VoterDetailScreen(voter: voter),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
+            border: Border.all(color: Colors.grey[200]!),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top row with Serial, Section, Part
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1976D2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Serial: ${voter.serialNo ?? 'N/A'}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1976D2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Section: 1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1976D2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Part: ${voter.partNo ?? 'N/A'}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              SizedBox(height: 16),
+              
+              // Main content row
+              Row(
+                children: [
+                  // Profile image placeholder
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  
+                  SizedBox(width: 16),
+                  
+                  // Voter details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // EPIC ID
+                        if (voter.epicId != null && voter.epicId!.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF4CAF50),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              voter.epicId!,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        
+                        SizedBox(height: 8),
+                        
+                        // Voter name (English)
+                        Text(
+                          voter.voterFirstName ?? 'N/A',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        
+                        // Voter name (Tamil) - placeholder for now
+                        Text(
+                          'திருநாவுக்கரசு', // This would be dynamic in real implementation
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        
+                        SizedBox(height: 4),
+                        
+                        // Relation name (English)
+                        if (voter.relationFirstName != null && voter.relationFirstName!.isNotEmpty)
+                          Text(
+                            voter.relationFirstName!,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        
+                        // Relation name (Tamil) - placeholder for now
+                        Text(
+                          'இரத்னபாய்', // This would be dynamic in real implementation
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        
+                        SizedBox(height: 4),
+                        
+                        // Address
+                        Text(
+                          'Door No 1-1-8', // This would be dynamic in real implementation
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              SizedBox(height: 16),
+              
+              // Bottom row with age and relation
+              Row(
+                children: [
+                  Icon(
+                    Icons.person,
+                    color: Color(0xFF1976D2),
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    '${voter.age ?? 'N/A'}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    '|',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Mother', // This would be dynamic in real implementation
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -103,12 +103,3 @@
   "relationFirstName": "संबंध पहला नाम"
 }
 
-  "searchByNameOrMobile": "नाम या मोबाइल नंबर से खोजें...",
-  "clear": "साफ़ करें",
-  "partNo": "भाग संख्या",
-  "serialNo": "क्रम संख्या",
-  "epicId": "एपिक आईडी",
-  "voterFirstName": "मतदाता पहला नाम",
-  "voterLastName": "मतदाता अंतिम नाम",
-  "relationFirstName": "संबंध पहला नाम"
-}

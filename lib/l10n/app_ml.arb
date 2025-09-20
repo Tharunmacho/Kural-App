@@ -103,12 +103,3 @@
   "relationFirstName": "ബന്ധം ആദ്യ പേര്"
 }
 
-  "searchByNameOrMobile": "പേര് അല്ലെങ്കിൽ മൊബൈൽ നമ്പർ വഴി തിരയുക...",
-  "clear": "ക്ലിയർ",
-  "partNo": "ഭാഗം നമ്പർ",
-  "serialNo": "സീരിയൽ നമ്പർ",
-  "epicId": "എപ്പിക് ഐഡി",
-  "voterFirstName": "വോട്ടറുടെ ആദ്യ പേര്",
-  "voterLastName": "വോട്ടറുടെ അവസാന പേര്",
-  "relationFirstName": "ബന്ധം ആദ്യ പേര്"
-}
